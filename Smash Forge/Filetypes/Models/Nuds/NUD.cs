@@ -1254,10 +1254,11 @@ namespace SmashForge
 
             d.WriteShort(Nodes.Count); // polysets
 
-            boneCount = ((ModelContainer)Parent).VBN == null ? 0 : ((ModelContainer)Parent).VBN.bones.Count;
+            bool noVbn = ((ModelContainer)Parent).VBN == null;
+            boneCount = noVbn ? boneCount : ((ModelContainer)Parent).VBN.bones.Count;
 
             d.WriteShort(boneCount == 0 ? 0 : type); // type
-            d.WriteShort(boneCount == 0 ? boneCount : boneCount - 1); // Number of bones
+            d.WriteShort(noVbn ? boneCount : boneCount - 1); // Number of bones
 
             d.WriteInt(0); // polyClump start
             d.WriteInt(0); // polyClump size
@@ -1487,7 +1488,7 @@ namespace SmashForge
                     d.WriteFloat(v.nrm.X);
                     d.WriteFloat(v.nrm.Y);
                     d.WriteFloat(v.nrm.Z);
-                    d.WriteFloat(1);
+                    d.WriteFloat(0);
                     d.WriteFloat(v.bitan.X);
                     d.WriteFloat(v.bitan.Y);
                     d.WriteFloat(v.bitan.Z);
