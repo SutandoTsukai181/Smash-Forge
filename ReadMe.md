@@ -1,8 +1,11 @@
-Smash Forge
+Smash Forge (CC2 Edition)
 ===========
 <a href="url"><img src="https://github.com/jam1garner/Smash-Forge/wiki/Images/Application Main.png" align="top" height="auto" width="auto" ></a>
 
-[Bug Tracker](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Request a feature](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Forge Wiki](https://github.com/jam1garner/Smash-Forge/wiki) | [![Build status](https://ci.appveyor.com/api/projects/status/vc7t6b10t3trd7g6?svg=true)](https://ci.appveyor.com/project/jam1garner19387/smash-forge)
+[Bug Tracker](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Request a feature](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Forge Wiki](https://github.com/jam1garner/Smash-Forge/wiki)
+
+## Notice
+Original work by [jam1garner](https://github.com/jam1garner). This is a modification to Smash Forge that adds compatibility with CC2 games (specifically JoJo ASB/EoH & NSUNS 4).
 
 ## Installation
 Download the latest commit from the [releases page](https://github.com/jam1garner/Smash-Forge/releases). See the wiki for more information and basic usage. **Do not accidentally download the source code (contains a .sln).**
@@ -11,6 +14,10 @@ Download the latest commit from the [releases page](https://github.com/jam1garne
 A minimum OpenGL version of 3.30 is required. See [Rendering Issues](https://github.com/jam1garner/Smash-Forge/wiki/Rendering-Issues) for details.  
 
 ## Features
+* **JoJo ASB/EoH**
+     * Planned features:
+        * Load/Save .xfbin files
+        * Replace models (.nud) and textures (.nut)
 * **Smash 4**
     * Accurate renders of Namco models (.nud), Namco textures (.nut), and Smash 4 level data (.lvd)
     * Animations
@@ -54,6 +61,8 @@ This program is still a work in progress. There may be bugs or incomplete featur
 stick with us as we're working on it! For known bugs and issues, check out the [Bug Tracker](https://github.com/jam1garner/Smash-4-Bone-Animator/issues)
 
 ## Credits
+All of the credit goes to the original Smash Forge team. This fork is just a modification of their project.
+
 This application uses Open Source components. You can find the source code of their open source
 projects along with license information below. We acknowledge and are grateful to these developers
 for their contributions to open source.
