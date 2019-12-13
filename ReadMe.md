@@ -8,7 +8,7 @@ Smash Forge (CC2 Edition)
 Original work by [jam1garner](https://github.com/jam1garner). This is a modification to Smash Forge that adds compatibility with CC2 games (specifically JoJo ASB/EoH & NSUNS 4).
 
 ## Installation
-Download the latest commit from the [releases page](https://github.com/jam1garner/Smash-Forge/releases). See the wiki for more information and basic usage. **Do not accidentally download the source code (contains a .sln).**
+Download the latest commit from the [releases page](https://github.com/SutandoTsukai181/Smash-Forge/releases). See the wiki for more information and basic usage. **Do not accidentally download the source code (contains a .sln).**
 
 ## System Requirements
 A minimum OpenGL version of 3.30 is required. See [Rendering Issues](https://github.com/jam1garner/Smash-Forge/wiki/Rendering-Issues) for details.  
