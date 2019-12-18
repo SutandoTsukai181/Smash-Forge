@@ -642,6 +642,32 @@ namespace SmashForge
             }
         }
 
+        private void copyToNewNudToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Nud.Polygon p = ((Nud.Polygon)filesTreeView.SelectedNode);
+            Nud.Mesh parent = (Nud.Mesh)p.Parent;
+            Nud.Mesh m = new Nud.Mesh();
+            m.Text = parent.Text;
+            m.Nodes.Add((Nud.Polygon)p.Clone());
+
+            try
+            {
+                parent.Parent.Parent.Nodes.Find("New_Nud", false)[0].Nodes.Add(m);
+            }
+            catch
+            {
+                Nud n = new Nud
+                {
+                    Name = "New_Nud",
+                    Text = "New Nud"
+                };
+                ((ModelContainer)parent.Parent.Parent).Nodes.Add(n);
+                n.Nodes.Add(m);
+            }
+            
+            RefreshNodes();
+        }
+
         private void aboveToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             if (filesTreeView.SelectedNode is Nud.Mesh)
