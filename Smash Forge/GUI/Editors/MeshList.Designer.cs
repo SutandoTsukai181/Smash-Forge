@@ -51,6 +51,7 @@
             this.generateTanBitanToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.detachToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyToNewNudToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vertexColorUtilstripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setToWhiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectColorUtilstripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -148,7 +149,6 @@
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.xmbContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyToNewNudToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -174,6 +174,7 @@
             this.filesTreeView.TabIndex = 0;
             this.filesTreeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
             this.filesTreeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
+            this.filesTreeView.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.filesTreeView_AfterExpand);
             this.filesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             this.filesTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
             this.filesTreeView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.treeView1_KeyPress);
@@ -235,7 +236,7 @@
             this.vertexColorUtilstripMenuItem,
             this.polyFormatToolStripMenuItem});
             this.polyContextMenu.Name = "polyContextMenu";
-            this.polyContextMenu.Size = new System.Drawing.Size(216, 392);
+            this.polyContextMenu.Size = new System.Drawing.Size(216, 364);
             this.polyContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // editMaterialToolStripMenuItem
@@ -352,6 +353,13 @@
             this.detachToolStripMenuItem.Size = new System.Drawing.Size(215, 24);
             this.detachToolStripMenuItem.Text = "Detach";
             this.detachToolStripMenuItem.Click += new System.EventHandler(this.detachToolStripMenuItem_Click);
+            // 
+            // copyToNewNudToolStripMenuItem
+            // 
+            this.copyToNewNudToolStripMenuItem.Name = "copyToNewNudToolStripMenuItem";
+            this.copyToNewNudToolStripMenuItem.Size = new System.Drawing.Size(215, 24);
+            this.copyToNewNudToolStripMenuItem.Text = "Copy To New Nud";
+            this.copyToNewNudToolStripMenuItem.Click += new System.EventHandler(this.copyToNewNudToolStripMenuItem_Click);
             // 
             // vertexColorUtilstripMenuItem
             // 
@@ -1107,13 +1115,6 @@
             this.openViewerToolStripMenuItem.Size = new System.Drawing.Size(163, 24);
             this.openViewerToolStripMenuItem.Text = "Open Viewer";
             this.openViewerToolStripMenuItem.Click += new System.EventHandler(this.openViewerToolStripMenuItem_Click);
-            // 
-            // copyToNewNudToolStripMenuItem
-            // 
-            this.copyToNewNudToolStripMenuItem.Name = "copyToNewNudToolStripMenuItem";
-            this.copyToNewNudToolStripMenuItem.Size = new System.Drawing.Size(215, 24);
-            this.copyToNewNudToolStripMenuItem.Text = "Copy To New Nud";
-            this.copyToNewNudToolStripMenuItem.Click += new System.EventHandler(this.copyToNewNudToolStripMenuItem_Click);
             // 
             // MeshList
             // 

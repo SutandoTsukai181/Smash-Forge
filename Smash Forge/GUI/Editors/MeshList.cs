@@ -70,7 +70,7 @@ namespace SmashForge
 
                 if(node is Nud.Polygon)
                 {
-                    if (node.Parent != null)
+                    if (node.Parent != null && node.Text == "Polygon")
                         ((Nud.Polygon)node).Text = "Polygon_" + ((Nud.Mesh)node.Parent).Nodes.IndexOf(node);
                 }
 
@@ -644,27 +644,31 @@ namespace SmashForge
 
         private void copyToNewNudToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Nud.Polygon p = ((Nud.Polygon)filesTreeView.SelectedNode);
-            Nud.Mesh parent = (Nud.Mesh)p.Parent;
-            Nud.Mesh m = new Nud.Mesh();
-            m.Text = parent.Text;
-            m.Nodes.Add((Nud.Polygon)p.Clone());
+            Nud.Polygon poly = ((Nud.Polygon)filesTreeView.SelectedNode);
+            Nud.Mesh mesh = (Nud.Mesh)poly.Parent;
+            Nud nud = (Nud)mesh.Parent;
+            Nud n;
 
-            try
+            if (nud.Parent.Nodes.Find("debug_nud", false).Any())
             {
-                parent.Parent.Parent.Nodes.Find("New_Nud", false)[0].Nodes.Add(m);
+                n = (Nud)nud.Parent.Nodes.Find("debug_nud", false)[0];
+                n.FirstNode.Nodes.Add((Nud.Polygon)poly.Clone());
             }
-            catch
+            else
             {
-                Nud n = new Nud
+                n = (Nud)nud.Clone();
+                n.Text = "debug.nud";
+                n.Name = "debug_nud";
+                nud.Parent.Nodes.Add((Nud)n);
+                foreach (Nud.Mesh m in n.Nodes)
                 {
-                    Name = "New_Nud",
-                    Text = "New Nud"
-                };
-                ((ModelContainer)parent.Parent.Parent).Nodes.Add(n);
-                n.Nodes.Add(m);
+                    if (m.Text != mesh.Text) n.Nodes.Remove(m);
+                }
+                n.FirstNode.Nodes.Clear();
+                n.FirstNode.Nodes.Add((Nud.Polygon)poly.Clone());
             }
             
+            n.UpdateRenderMeshes();
             RefreshNodes();
         }
 
@@ -1865,6 +1869,11 @@ namespace SmashForge
         private void renameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             filesTreeView.SelectedNode?.BeginEdit();
+        }
+
+        private void filesTreeView_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            RefreshNodes();
         }
     }
 }

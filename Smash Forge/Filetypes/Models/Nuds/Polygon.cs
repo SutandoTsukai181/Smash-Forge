@@ -14,7 +14,7 @@ namespace SmashForge
             // Bone types and vertex types control two bytes of the vertsize.
             public enum BoneTypes
             {
-                NoBones =  0x00,
+                NoBones = 0x00,
                 Float = 0x10,
                 HalfFloat = 0x20,
                 Byte = 0x40
@@ -132,7 +132,7 @@ namespace SmashForge
                         uv = v.uv.Count > 0 ? v.uv[0] : new Vector2(0, 0),
                         uv2 = v.uv.Count > 1 ? v.uv[1] : new Vector2(0, 0),
                         uv3 = v.uv.Count > 2 ? v.uv[2] : new Vector2(0, 0),
-                        boneIds = new Vector4I 
+                        boneIds = new Vector4I
                         (
                             v.boneIds.Count > 0 ? v.boneIds[0] : -1,
                             v.boneIds.Count > 1 ? v.boneIds[1] : -1,
@@ -196,15 +196,15 @@ namespace SmashForge
                 for (int i = 0; i < displayFaceSize; i += 3)
                 {
                     Vertex v1 = vertices[f[i]];
-                    Vertex v2 = vertices[f[i+1]];
-                    Vertex v3 = vertices[f[i+2]];
+                    Vertex v2 = vertices[f[i + 1]];
+                    Vertex v3 = vertices[f[i + 2]];
                     Vector3 nrm = VectorUtils.CalculateNormal(v1.pos, v2.pos, v3.pos);
 
                     normals[f[i + 0]] += nrm;
                     normals[f[i + 1]] += nrm;
                     normals[f[i + 2]] += nrm;
                 }
-                
+
                 for (int i = 0; i < normals.Length; i++)
                     vertices[i].nrm = normals[i].Normalized();
 
@@ -346,6 +346,25 @@ namespace SmashForge
                     displayFaceSize = vertexIndices.Count;
                     return vertexIndices;
                 }
+            }
+
+            public override object Clone()
+            {
+                Polygon polygon = (Polygon)base.Clone();
+                polygon.display = display;
+                polygon.displayFaceSize = displayFaceSize;
+                polygon.DisplayId = DisplayId;
+                polygon.materials = materials;
+                polygon.polflag = polflag;
+                polygon.renderMesh = renderMesh;
+                polygon.selectedVerts = selectedVerts;
+                polygon.strip = strip;
+                polygon.UVSize = UVSize;
+                polygon.vertexIndices = vertexIndices;
+                polygon.vertices = vertices;
+                polygon.vertSize = vertSize;
+
+                return polygon;
             }
         }
     }

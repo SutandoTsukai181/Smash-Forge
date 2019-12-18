@@ -93,6 +93,14 @@ namespace SmashForge
         public Vector4 BoundingSphere
         {
             get { return new Vector4(boundingSphere[0], boundingSphere[1], boundingSphere[2], boundingSphere[3]); }
+            set
+            {
+                Vector4 b = value;
+                boundingSphere[0] = b[0];
+                boundingSphere[1] = b[1];
+                boundingSphere[2] = b[2];
+                boundingSphere[3] = b[3];
+            }
         }
 
         private void SetupTreeNode()
@@ -1886,6 +1894,30 @@ namespace SmashForge
                         if(!texIds.Contains(mat.displayTexId))
                             texIds.Add(mat.displayTexId);
             return texIds;
+        }
+
+        public override object Clone()
+        {
+            Nud nud = (Nud)base.Clone();
+            nud.boneCount = boneCount;
+            nud.bonesUbo = bonesUbo;
+            nud.boundingSphere = boundingSphere;
+            nud.BoundingSphere = BoundingSphere;
+            nud.depthSortedMeshes = depthSortedMeshes;
+            nud.directUVTime = directUVTime;
+            nud.drawingOrder = drawingOrder;
+            nud.drawRange = drawRange;
+            nud.Endian = Endian;
+            nud.hasBones = hasBones;
+            nud.lightSetNumber = lightSetNumber;
+            nud.modelType = modelType;
+            nud.Renderable = Renderable;
+            nud.selectVbo = selectVbo;
+            nud.type = type;
+            nud.useDirectUVTime = useDirectUVTime;
+            nud.version = version;
+            
+            return nud;
         }
     }
 }

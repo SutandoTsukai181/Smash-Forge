@@ -59,6 +59,14 @@ namespace SmashForge
             public Vector4 BoundingSphere
             {
                 get { return new Vector4(boundingSphere[0], boundingSphere[1], boundingSphere[2], boundingSphere[3]); }
+                set
+                {
+                    Vector4 b = value;
+                    boundingSphere[0] = b[0];
+                    boundingSphere[1] = b[1];
+                    boundingSphere[2] = b[2];
+                    boundingSphere[3] = b[3];
+                }
             }
 
             public void addVertex(Vertex v)
@@ -210,6 +218,24 @@ namespace SmashForge
                 billboardY = Text.Contains("BILLBOARDYAXIS");
                 useNsc = Text.Contains("NSC");
                 sortByObjHierarchy = Text.Contains("HIR");
+            }
+
+            public override object Clone()
+            {
+                Mesh mesh = (Mesh)base.Clone();
+                mesh.billboard = billboard;
+                mesh.billboardY = billboardY;
+                mesh.boneflag = boneflag;
+                mesh.boundingSphere = boundingSphere;
+                mesh.BoundingSphere = BoundingSphere;
+                mesh.DisplayId = DisplayId;
+                mesh.singlebind = singlebind;
+                mesh.sortBias = sortBias;
+                mesh.sortByObjHierarchy = sortByObjHierarchy;
+                mesh.sortingDistance = sortingDistance;
+                mesh.useNsc = useNsc;
+
+                return mesh;
             }
         }
     }
