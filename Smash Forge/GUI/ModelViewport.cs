@@ -921,6 +921,16 @@ namespace SmashForge
 
             Vector4 result = BoundingSphereGenerator.GenerateBoundingSphere(spheres);
 
+            // Hack to get a good view upon loading the mesh
+            if (result.Z > 150)
+            {
+                result.Y += 187;
+            }
+            else if (result.Y < 0 && result.Y > -10)
+            {
+                result.Y += 87;
+            }
+
             if (hasModelContainers)
                 camera.FrameBoundingSphere(result.Xyz, result.W, 0);
             else
