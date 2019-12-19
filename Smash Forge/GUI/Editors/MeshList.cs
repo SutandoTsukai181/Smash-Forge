@@ -57,6 +57,7 @@ namespace SmashForge
 
         public ContextMenuStrip PolyContextMenu { get { return polyContextMenu; } }
         public ContextMenuStrip MeshContextMenu { get { return meshContextMenu; } }
+        public MeshMover mm;
 
         public void RefreshNodes()
         {
@@ -175,6 +176,21 @@ namespace SmashForge
             else if (filesTreeView.SelectedNode is MeleeJointNode)
             {
                 ((MeleeJointNode)e.Node).RenderBone.Selected = true;
+            }
+
+            // Change MeshMover's targets each time the selected node changes
+            if (mm != null)
+            {
+                if (e.Node is Nud.Mesh)
+                {
+                    mm.polygon = null;
+                    mm.mesh = (Nud.Mesh)filesTreeView.SelectedNode;
+                }
+                else if (e.Node is Nud.Polygon)
+                {
+                    mm.mesh = null;
+                    mm.polygon = (Nud.Polygon)filesTreeView.SelectedNode;
+                }
             }
 
             // Update selection render.
@@ -568,10 +584,12 @@ namespace SmashForge
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            MeshMover mm = new MeshMover();
+            mm = new MeshMover();
             if(filesTreeView.SelectedNode!=null)
                 if(filesTreeView.SelectedNode is Nud.Mesh)
                     mm.mesh = (Nud.Mesh)filesTreeView.SelectedNode;
+                else if (filesTreeView.SelectedNode is Nud.Polygon)
+                    mm.polygon = (Nud.Polygon)filesTreeView.SelectedNode;
             mm.Show();
         }
 

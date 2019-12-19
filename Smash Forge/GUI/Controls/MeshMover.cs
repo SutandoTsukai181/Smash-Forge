@@ -7,6 +7,7 @@ namespace SmashForge
     public partial class MeshMover : Form
     {
         public Nud.Mesh mesh;
+        public Nud.Polygon polygon;
         public int prevValue = 5;
 
         public MeshMover()
@@ -30,40 +31,55 @@ namespace SmashForge
             scaXTB.Value = 5;
         }
 
+        public void MovePoly(int type, float move, Nud.Polygon p)
+        {
+            foreach (Nud.Vertex v in p.vertices)
+            {
+                // Rotate the mesh normals as well to preserve proper normal direction.
+                switch (type)
+                {
+                    case 1: v.pos.X += move; break;
+                    case 2: v.pos.Y += move; break;
+                    case 3: v.pos.Z += move; break;
+                    case 4:
+                        v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationX(move * ((float)Math.PI / 180)));
+                        v.nrm = Vector3.TransformVector(v.nrm, Matrix4.CreateRotationX(move * ((float)Math.PI / 180))).Normalized();
+                        break;
+                    case 5:
+                        v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationY(move * ((float)Math.PI / 180)));
+                        v.nrm = Vector3.TransformVector(v.nrm, Matrix4.CreateRotationY(move * ((float)Math.PI / 180))).Normalized();
+                        break;
+                    case 6:
+                        v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationZ(move * ((float)Math.PI / 180)));
+                        v.nrm = Vector3.TransformVector(v.nrm, Matrix4.CreateRotationZ(move * ((float)Math.PI / 180))).Normalized();
+                        break;
+                    case 7:
+                        v.pos = Vector3.Multiply(v.pos, move);
+                        break;
+                }
+
+            }
+        }
+
         public void Move(int type, float move)
         {
-            // move mesh over
-            foreach (Nud.Polygon p in mesh.Nodes)
+            Nud n;
+            if (mesh == null)
             {
-                foreach (Nud.Vertex v in p.vertices)
-                {
-                    // Rotate the mesh normals as well to preserve proper normal direction.
-                    switch (type)
-                    {
-                        case 1: v.pos.X += move; break;
-                        case 2: v.pos.Y += move; break;
-                        case 3: v.pos.Z += move; break;
-                        case 4:
-                            v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationX(move * ((float)Math.PI / 180)));
-                            v.nrm = Vector3.TransformVector(v.nrm, Matrix4.CreateRotationX(move * ((float)Math.PI / 180))).Normalized();
-                            break;
-                        case 5:
-                            v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationY(move * ((float)Math.PI / 180)));
-                            v.nrm = Vector3.TransformVector(v.nrm, Matrix4.CreateRotationY(move * ((float)Math.PI / 180))).Normalized();
-                            break;
-                        case 6:
-                            v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationZ(move * ((float)Math.PI / 180)));
-                            v.nrm = Vector3.TransformVector(v.nrm, Matrix4.CreateRotationZ(move * ((float)Math.PI / 180))).Normalized();
-                            break;
-                        case 7:
-                            v.pos = Vector3.Multiply(v.pos, move);
-                            break;
-                    }
-                    
-                }
+                MovePoly(type, move, polygon);
+                n = (Nud)polygon.Parent.Parent;
             }
-
-            Nud n = (Nud)mesh.Parent;
+            else
+            {
+                // move mesh over
+                foreach (Nud.Polygon p in mesh.Nodes)
+                {
+                    MovePoly(type, move, p);
+                }
+                n = (Nud)mesh.Parent;
+            }
+            
+            
             n.UpdateRenderMeshes();
             MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
