@@ -171,7 +171,7 @@ namespace SmashForge
         public static bool renderFloor = true;
         public static string floorTexFilePath = "";
         public static TextureWrapMode floorWrap = TextureWrapMode.MirroredRepeat;
-        public static float floorSize = 30f;
+        public static float floorSize = 200f;
         public static Color floorColor = Color.Gray;
         public static FloorStyle floorStyle = FloorStyle.WireFrame;
         public static bool renderFloorLines = true;

@@ -652,7 +652,6 @@ namespace SmashForge
             if (nud.Parent.Nodes.Find("debug_nud", false).Any())
             {
                 n = (Nud)nud.Parent.Nodes.Find("debug_nud", false)[0];
-                n.FirstNode.Nodes.Add((Nud.Polygon)poly.Clone());
             }
             else
             {
@@ -665,9 +664,11 @@ namespace SmashForge
                     if (m.Text != mesh.Text) n.Nodes.Remove(m);
                 }
                 n.FirstNode.Nodes.Clear();
-                n.FirstNode.Nodes.Add((Nud.Polygon)poly.Clone());
             }
-            
+            Nud.Polygon copy = (Nud.Polygon)poly.Clone();
+            n.FirstNode.Nodes.Add(copy);
+            filesTreeView.SelectedNode = copy;
+
             n.UpdateRenderMeshes();
             RefreshNodes();
         }

@@ -1112,8 +1112,8 @@ namespace SmashForge
             foreach (Vertex v in vertices)
             {
                 v.pos.X = d.ReadFloat();
+                v.pos.Z = -d.ReadFloat();
                 v.pos.Y = d.ReadFloat();
-                v.pos.Z = d.ReadFloat();
 
                 if (vertexType == (int)Polygon.VertexTypes.NoNormals)
                 {
@@ -1122,16 +1122,16 @@ namespace SmashForge
                 else if (vertexType == (int)Polygon.VertexTypes.NormalsFloat)
                 {
                     v.nrm.X = d.ReadFloat();
+                    v.nrm.Z = -d.ReadFloat();
                     v.nrm.Y = d.ReadFloat();
-                    v.nrm.Z = d.ReadFloat();
                     d.Skip(4); // n1?
                     d.Skip(4); // r1?
                 }
                 else if (vertexType == 2)
                 {
                     v.nrm.X = d.ReadFloat();
+                    v.nrm.Z = -d.ReadFloat();
                     v.nrm.Y = d.ReadFloat();
-                    v.nrm.Z = d.ReadFloat();
                     d.Skip(4); // n1?
                     d.Skip(12); // r1?
                     d.Skip(12); // r1?
@@ -1141,38 +1141,38 @@ namespace SmashForge
                 {
                     d.Skip(4); //Don't know what this is but it's not nothing
                     v.nrm.X = d.ReadFloat();
+                    v.nrm.Z = -d.ReadFloat();
                     v.nrm.Y = d.ReadFloat();
-                    v.nrm.Z = d.ReadFloat();
                     d.Skip(4);
                     v.bitan.X = d.ReadFloat();
+                    v.bitan.Z = -d.ReadFloat();
                     v.bitan.Y = d.ReadFloat();
-                    v.bitan.Z = d.ReadFloat();
                     v.bitan.W = d.ReadFloat();
                     v.tan.X = d.ReadFloat();
+                    v.tan.Z = -d.ReadFloat();
                     v.tan.Y = d.ReadFloat();
-                    v.tan.Z = d.ReadFloat();
                     v.tan.W = d.ReadFloat();
                 }
                 else if (vertexType == (int)Polygon.VertexTypes.NormalsHalfFloat)
                 {
                     v.nrm.X = d.ReadHalfFloat();
+                    v.nrm.Z = -d.ReadHalfFloat();
                     v.nrm.Y = d.ReadHalfFloat();
-                    v.nrm.Z = d.ReadHalfFloat();
                     d.Skip(2); // n1?
                 }
                 else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanHalfFloat)
                 {
                     v.nrm.X = d.ReadHalfFloat();
+                    v.nrm.Z = -d.ReadHalfFloat();
                     v.nrm.Y = d.ReadHalfFloat();
-                    v.nrm.Z = d.ReadHalfFloat();
                     d.Skip(2); // n1?
                     v.bitan.X = d.ReadHalfFloat();
+                    v.bitan.Z = -d.ReadHalfFloat();
                     v.bitan.Y = d.ReadHalfFloat();
-                    v.bitan.Z = d.ReadHalfFloat();
                     v.bitan.W = d.ReadHalfFloat();
                     v.tan.X = d.ReadHalfFloat();
+                    v.tan.Z = -d.ReadHalfFloat();
                     v.tan.Y = d.ReadHalfFloat();
-                    v.tan.Z = d.ReadHalfFloat();
                     v.tan.W = d.ReadHalfFloat();
                 }
                 else
@@ -1185,8 +1185,8 @@ namespace SmashForge
                     if (p.UVSize >= 18)
                     {
                         v.color.X = d.ReadByte();
-                        v.color.Y = d.ReadByte();
                         v.color.Z = d.ReadByte();
+                        v.color.Y = d.ReadByte();
                         v.color.W = d.ReadByte();
                     }
 
@@ -1459,8 +1459,8 @@ namespace SmashForge
             foreach (Vertex v in poly.vertices)
             {
                 d.WriteFloat(v.pos.X);
+                d.WriteFloat(-v.pos.Z);
                 d.WriteFloat(v.pos.Y);
-                d.WriteFloat(v.pos.Z);
 
                 if (vertexType == (int)Polygon.VertexTypes.NoNormals)
                 {
@@ -1469,24 +1469,24 @@ namespace SmashForge
                 else if (vertexType == (int)Polygon.VertexTypes.NormalsFloat)
                 {
                     d.WriteFloat(v.nrm.X);
+                    d.WriteFloat(-v.nrm.Z);
                     d.WriteFloat(v.nrm.Y);
-                    d.WriteFloat(v.nrm.Z);
                     d.WriteFloat(1);
                     d.WriteFloat(1);
                 }
                 else if (vertexType == 2)
                 {
                     d.WriteFloat(v.nrm.X);
+                    d.WriteFloat(-v.nrm.Z);
                     d.WriteFloat(v.nrm.Y);
-                    d.WriteFloat(v.nrm.Z);
                     d.WriteFloat(1);
                     d.WriteFloat(v.bitan.X);
+                    d.WriteFloat(-v.bitan.Z);
                     d.WriteFloat(v.bitan.Y);
-                    d.WriteFloat(v.bitan.Z);
                     d.WriteFloat(1);
                     d.WriteFloat(v.tan.X);
+                    d.WriteFloat(-v.tan.Z);
                     d.WriteFloat(v.tan.Y);
-                    d.WriteFloat(v.tan.Z);
                     d.WriteFloat(1);
                     d.WriteFloat(1);
                 }
@@ -1494,38 +1494,38 @@ namespace SmashForge
                 {
                     d.WriteFloat(1);
                     d.WriteFloat(v.nrm.X);
+                    d.WriteFloat(-v.nrm.Z);
                     d.WriteFloat(v.nrm.Y);
-                    d.WriteFloat(v.nrm.Z);
                     d.WriteFloat(0);
                     d.WriteFloat(v.bitan.X);
+                    d.WriteFloat(-v.bitan.Z);
                     d.WriteFloat(v.bitan.Y);
-                    d.WriteFloat(v.bitan.Z);
                     d.WriteFloat(v.bitan.W);
                     d.WriteFloat(v.tan.X);
+                    d.WriteFloat(-v.tan.Z);
                     d.WriteFloat(v.tan.Y);
-                    d.WriteFloat(v.tan.Z);
                     d.WriteFloat(v.tan.W);
                 }
                 else if (vertexType == (int)Polygon.VertexTypes.NormalsHalfFloat)
                 {
                     d.WriteHalfFloat(v.nrm.X);
+                    d.WriteHalfFloat(-v.nrm.Z);
                     d.WriteHalfFloat(v.nrm.Y);
-                    d.WriteHalfFloat(v.nrm.Z);
                     d.WriteHalfFloat(1);
                 }
                 else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanHalfFloat)
                 {
                     d.WriteHalfFloat(v.nrm.X);
+                    d.WriteHalfFloat(-v.nrm.Z);
                     d.WriteHalfFloat(v.nrm.Y);
-                    d.WriteHalfFloat(v.nrm.Z);
                     d.WriteHalfFloat(1);
                     d.WriteHalfFloat(v.bitan.X);
+                    d.WriteHalfFloat(-v.bitan.Z);
                     d.WriteHalfFloat(v.bitan.Y);
-                    d.WriteHalfFloat(v.bitan.Z);
                     d.WriteHalfFloat(v.bitan.W);
                     d.WriteHalfFloat(v.tan.X);
+                    d.WriteHalfFloat(-v.tan.Z);
                     d.WriteHalfFloat(v.tan.Y);
-                    d.WriteHalfFloat(v.tan.Z);
                     d.WriteHalfFloat(v.tan.W);
                 }
                 else
@@ -1538,8 +1538,8 @@ namespace SmashForge
                     if (poly.UVSize >= 18)
                     {
                         d.WriteByte((int)v.color.X);
-                        d.WriteByte((int)v.color.Y);
                         d.WriteByte((int)v.color.Z);
+                        d.WriteByte((int)v.color.Y);
                         d.WriteByte((int)v.color.W);
                     }
 
