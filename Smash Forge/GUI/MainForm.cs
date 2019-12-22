@@ -394,6 +394,32 @@ namespace SmashForge
             mvp.FrameSelectionAndSort();
             return mvp;
         }
+        public ModelViewport OpenXfbin(string pathXfbin, string viewportTitle = "", ModelViewport mvp = null)
+        {
+
+            if (mvp == null)
+            {
+                mvp = new ModelViewport();
+                AddDockedControl(mvp);
+            }
+
+            XfbinContainer xfbinContainer = new XfbinContainer();
+            mvp.draw.Add(xfbinContainer);
+            xfbinContainer.Text = viewportTitle;
+            mvp.Text = viewportTitle;
+            xfbinContainer.XFBIN = new Xfbin(pathXfbin);
+
+            foreach (NUT n in xfbinContainer.NUTs)
+                LoadNut(n);
+
+            foreach (Nud n in xfbinContainer.NUDs)
+                if (n != null)
+                    n.MergePoly();
+
+            // Reset the camera. 
+            mvp.FrameSelectionAndSort();
+            return mvp;
+        }
 
         public ModelViewport OpenKcl(byte[] fileData, string fileName, string viewportTitle = "", ModelViewport mvp = null)
         {
@@ -612,6 +638,12 @@ namespace SmashForge
             modelContainer.NUT = nut;
             Runtime.textureContainers.Add(nut);
             // Multiple windows was a mistake...
+            Runtime.glTexturesNeedRefreshing = true;
+        }
+
+        private static void LoadNut(NUT nut)
+        {
+            Runtime.textureContainers.Add(nut);
             Runtime.glTexturesNeedRefreshing = true;
         }
 
@@ -1163,12 +1195,12 @@ namespace SmashForge
 
             if (fileName.EndsWith(".nud"))
             {
-                if (dockPanel1.ActiveContent is ModelViewport)
+                if (GetActiveModelViewport() != null)
                 {
                     DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
-                        OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name, (ModelViewport)dockPanel1.ActiveContent);
+                        OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name, GetActiveModelViewport());
                     }
                     if (dialogResult == DialogResult.No)
                     {
@@ -1340,8 +1372,25 @@ namespace SmashForge
 
             if (fileName.EndsWith(".nut"))
             {
-                NutEditor editor = new NutEditor(fileName);
-                AddDockedControl(editor);
+                if (GetActiveModelViewport() != null)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        GetActiveModelViewport().meshList.filesTreeView.Nodes.Add(new NUT(fileName));
+                        Runtime.glTexturesNeedRefreshing = true;
+                    }
+                    if (dialogResult == DialogResult.No)
+                    {
+                        NutEditor editor = new NutEditor(fileName);
+                        AddDockedControl(editor);
+                    }
+                }
+                else
+                {
+                    NutEditor editor = new NutEditor(fileName);
+                    AddDockedControl(editor);
+                }
             }
 
             if (fileName.EndsWith(".bntx"))
@@ -1653,6 +1702,26 @@ namespace SmashForge
                 Workspace.OpenWorkspace(fileName);
             }
 
+            if (fileName.EndsWith(".xfbin"))
+            {
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        OpenXfbin(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name, (ModelViewport)dockPanel1.ActiveContent);
+                    }
+                    if (dialogResult == DialogResult.No)
+                    {
+                        OpenXfbin(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
+                    }
+                }
+                else
+                {
+                    OpenXfbin(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
+                }
+            }
+
             // Don't want to mess up the project tree if we
             // just set it up already
             if (!fileName.EndsWith(".wrkspc"))
@@ -1719,7 +1788,8 @@ namespace SmashForge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0;*.bntx;*.szs;*.sbfres;*.sarc;*.pack;*.byaml;*.byml;*.kcl;*.dat;*.lm;*.nulm|" +
+                    "Supported Formats|*.xfbin;*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0;*.bntx;*.szs;*.sbfres;*.sarc;*.pack;*.byaml;*.byml;*.kcl;*.dat;*.lm;*.nulm|" +
+                    "CC2 Xfbin Archive (.xfbin)|*.xfbin|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +

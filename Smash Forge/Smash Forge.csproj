@@ -251,6 +251,8 @@
     <Compile Include="Filetypes\Textures\RG_ETC1.cs" />
     <Compile Include="Filetypes\UI\LM.cs" />
     <Compile Include="Filetypes\UI\Texlist.cs" />
+    <Compile Include="Filetypes\XFBIN.cs" />
+    <Compile Include="Filetypes\XfbinContainer.cs" />
     <Compile Include="Filetypes\Yaz0.cs" />
     <Compile Include="GUI\Editors\BFRES Editors\BNTXMaterialTextureEditor.cs">
       <SubType>Form</SubType>

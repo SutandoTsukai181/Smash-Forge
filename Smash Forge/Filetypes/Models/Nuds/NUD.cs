@@ -31,6 +31,8 @@ namespace SmashForge
         //Pokkén uses little endian NUD (NDWD)
         public override Endianness Endian { get; set; }
         public ushort version = 0x0200;
+        public int filesIndex;
+        public int startOffset;
 
         //If the ModelContainer of the NUD has no bones, we will write the type as 0 regardless of this value
         //If it does have bones, this value will be written as normal. 2 is common but it can also validly be 0 and other values
@@ -85,6 +87,12 @@ namespace SmashForge
             SetupTreeNode();
         }
 
+        public Nud(FileData fileData) : this()
+        {
+            Read(fileData);
+            Text = this.FirstNode.Text;
+        }
+
         public Nud(string filename) : this()
         {
             Read(filename);
@@ -124,7 +132,7 @@ namespace SmashForge
             string incorrectTextureIds = GetTextureIdsWithoutNutOrDummyTex(nut);
             if (incorrectTextureIds.Length > 0)
             {
-                MessageBox.Show("The following texture IDs do not match a texture in the NUT or a valid dummy texture:\n" + incorrectTextureIds, "Incorrect Texture IDs");
+                //MessageBox.Show("The following texture IDs do not match a texture in the NUT or a valid dummy texture:\n" + incorrectTextureIds, "Incorrect Texture IDs");
             }
         }
 
@@ -290,7 +298,7 @@ namespace SmashForge
 
                 if (mesh.Checked)
                 {
-                    if (mesh.useNsc && mesh.singlebind != -1)
+                    if (mesh.useNsc && mesh.singlebind != -1 && Parent is ModelContainer)
                     {
                         // Use the center of the bone as the bounding box center for NSC meshes. 
                         Vector3 center = ((ModelContainer)Parent).VBN.bones[mesh.singlebind].pos;
@@ -515,6 +523,8 @@ namespace SmashForge
             //System.Diagnostics.Debug.WriteLine("");
         }
 
+        private bool bugged = false;
+
         private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, Material previousMaterial, bool drawId)
         {
             if (p.vertexIndices.Count < 3)
@@ -527,9 +537,18 @@ namespace SmashForge
 
             SetPolygonSpecificUniforms(p, shader, material);
 
-            if (!material.EqualTextures(previousMaterial))
-                NudUniforms.SetTextureUniforms(shader, material, dummyTextures);
-
+            try // nsuns textures bug
+            {
+                if (!bugged)
+                {
+                    if (p.Parent.Parent.Text.Contains("eye"))
+                        material.texType = 1;
+                    if (!material.EqualTextures(previousMaterial))
+                        NudUniforms.SetTextureUniforms(shader, material, dummyTextures);
+                }
+            }
+            catch { bugged = true; }
+            
             // Update render mesh settings.
             // TODO: Avoid redundant state changes.
             p.renderMesh.SetRenderSettings(material);
@@ -603,7 +622,7 @@ namespace SmashForge
             if (mesh != null && mesh.Text.Contains("_NSC"))
             {
                 int index = mesh.singlebind;
-                if (index != -1)
+                if (index != -1 && mesh.Parent.Parent is ModelContainer)
                 {
                     // HACK
                     ModelContainer modelContainer = (ModelContainer)mesh.Parent.Parent;
@@ -833,10 +852,14 @@ namespace SmashForge
             public int texprop3;
             public int texprop4;
         }
-
         public override void Read(string filename)
         {
             FileData fileData = new FileData(filename);
+            Read(fileData);
+        }
+
+        public void Read(FileData fileData)
+        {
             fileData.endian = Endianness.Big;
             fileData.Seek(0);
 
@@ -1031,6 +1054,8 @@ namespace SmashForge
                         propoff = p.texprop3;
                 else if (propoff == p.texprop3)
                     propoff = p.texprop4;
+                else if (propoff == p.texprop4)
+                    propoff = 0; // texprop4 isn't always equal to 0
             }
 
             return mats;
@@ -1262,8 +1287,12 @@ namespace SmashForge
 
             d.WriteShort(Nodes.Count); // polysets
 
-            bool noVbn = ((ModelContainer)Parent).VBN == null;
-            boneCount = noVbn ? boneCount : ((ModelContainer)Parent).VBN.bones.Count;
+            bool noVbn = true;
+            if (Parent is ModelContainer)
+            {
+                noVbn = ((ModelContainer)Parent).VBN == null;
+                boneCount = noVbn ? boneCount : ((ModelContainer)Parent).VBN.bones.Count;
+            }
 
             d.WriteShort(boneCount == 0 ? 0 : type); // type
             d.WriteShort(noVbn ? boneCount : boneCount - 1); // Number of bones

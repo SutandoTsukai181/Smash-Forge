@@ -36,6 +36,8 @@ namespace SmashForge
             }
             private uint flags;
 
+            public int texType { get; set; }
+
             public int BlendMode { get; set; }
             public int DstFactor { get; set; }
             public int SrcFactor { get; set; }

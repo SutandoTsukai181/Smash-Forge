@@ -30,14 +30,25 @@ namespace SmashForge.Rendering
 
                 // Holding shift changes zoom speed.
                 float zoomAmount = zoomSpeed * zoomDistanceScale;
-                if (keyboardState.IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
-                    zoomAmount *= shiftZoomMultiplier;
+                float panAmount = 10f;
 
-                // Zooms in or out with arrow keys.
-                if (keyboardState.IsKeyDown(OpenTK.Input.Key.Down))
+                if (keyboardState.IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
+                {
+                    zoomAmount *= shiftZoomMultiplier;
+                    panAmount *= shiftZoomMultiplier;
+                }
+
+                // Zooms in or out with W and S.
+                if (keyboardState.IsKeyDown(OpenTK.Input.Key.S))
                     Zoom(-zoomAmount, true);
-                else if (keyboardState.IsKeyDown(OpenTK.Input.Key.Up))
+                else if (keyboardState.IsKeyDown(OpenTK.Input.Key.W))
                     Zoom(zoomAmount, true);
+
+                // "Strafe" left and right with A and D.
+                if (keyboardState.IsKeyDown(OpenTK.Input.Key.A))
+                    Pan(panAmount, 0, true);
+                else if (keyboardState.IsKeyDown(OpenTK.Input.Key.D))
+                    Pan(-panAmount, 0, true);
 
                 // Scroll wheel zooms in or out.
                 float scrollZoomAmount = (mouseState.WheelPrecise - mouseSLast) * scrollWheelZoomSpeed;

@@ -1894,5 +1894,121 @@ namespace SmashForge
         {
             RefreshNodes();
         }
+
+        #region DragDrop
+
+        // Some neat code straight from the documentation
+        private void filesTreeView_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            // Move the dragged node when the left mouse button is used.
+            if (e.Button == MouseButtons.Left)
+            {
+                DoDragDrop(e.Item, DragDropEffects.Move);
+            }
+
+            // Copy the dragged node when the right mouse button is used.
+            else if (e.Button == MouseButtons.Right)
+            {
+                DoDragDrop(e.Item, DragDropEffects.Copy);
+            }
+        }
+
+        private TreeNode overNode = new TreeNode();
+        private TreeNode draggedNode;
+
+        private void filesTreeView_DragEnter(object sender, DragEventArgs e)
+        {
+            draggedNode = (TreeNode)e.Data.GetData(GetDraggedFormat(e.Data));
+            e.Effect = e.AllowedEffect;
+        }
+
+        private void filesTreeView_DragOver(object sender, DragEventArgs e)
+        {
+            System.Drawing.Point targetPoint = filesTreeView.PointToClient(new System.Drawing.Point(e.X, e.Y));
+
+            try
+            {
+                filesTreeView.SelectedNode = filesTreeView.GetNodeAt(targetPoint);
+                overNode = filesTreeView.SelectedNode;
+
+                if (draggedNode.Parent == overNode || formats[overNode.GetType().FullName] != formats[GetDraggedFormat(e.Data)] - 1)
+                {
+                    e.Effect = DragDropEffects.None;
+                }
+                else
+                {
+                    e.Effect = e.AllowedEffect;
+                }
+            }
+            catch { }
+        }
+
+        private readonly Dictionary<string, int> formats = new Dictionary<string, int>()
+        {
+            { "SmashForge.XfbinContainer", 0 },
+            { "SmashForge.ModelContainer", 0 },
+            { "SmashForge.Nud", 1 },
+            { "SmashForge.Nud+Mesh", 2 },
+            { "SmashForge.Nud+Polygon", 3 },
+            { "SmashForge.NUT", 5 },
+            { "SmashForge.NutTexture", 6 },
+        };
+
+        private string GetDraggedFormat(IDataObject d)
+        {
+            foreach (string t in d.GetFormats())
+            {
+                if (formats.ContainsKey(t))
+                    return t;
+            }
+            return "";
+        }
+
+        private void filesTreeView_DragDrop(object sender, DragEventArgs e)
+        {
+            System.Drawing.Point targetPoint = filesTreeView.PointToClient(new System.Drawing.Point(e.X, e.Y));
+            TreeNode targetNode = filesTreeView.GetNodeAt(targetPoint);
+            
+            // Confirm that the node at the drop location is not 
+            // the dragged node or a descendant of the dragged node.
+            if (!draggedNode.Equals(targetNode) && IsValidNode(draggedNode, targetNode))
+            {
+                // If it is a move operation, remove the node from its current 
+                // location and add it to the node at the drop location.
+                if (e.Effect == DragDropEffects.Move)
+                {
+                    draggedNode.Remove();
+                    targetNode.Nodes.Add(draggedNode);
+                }
+
+                // If it is a copy operation, clone the dragged node 
+                // and add it to the node at the drop location.
+                else if (e.Effect == DragDropEffects.Copy)
+                {
+                    targetNode.Nodes.Add((TreeNode)draggedNode.Clone());
+                }
+
+                // Expand the node at the location 
+                // to show the dropped node.
+                targetNode.Expand();
+            }
+        }
+
+        private bool IsValidNode(TreeNode node1, TreeNode node2)
+        {
+            if (node2 == null)
+                return false;
+
+            int t1 = formats[node1.GetType().FullName];
+            int t2;
+            if (formats.TryGetValue(node2.GetType().FullName, out t2))
+            {
+                if (t1 - 1 == t2 || t2 == 0)
+                    return true;
+            }
+            return false;
+        }
+
+        #endregion
     }
 }

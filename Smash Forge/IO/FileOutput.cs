@@ -12,6 +12,16 @@ namespace SmashForge
 
         public Endianness endian;
 
+        public FileOutput()
+        {
+            
+        }
+
+        public FileOutput(byte[] bytes)
+        {
+            data = bytes.ToList();
+        }
+
         public byte[] GetBytes()
         {
             return data.ToArray();

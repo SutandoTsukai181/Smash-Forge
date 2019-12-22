@@ -223,6 +223,8 @@ namespace SmashForge
         public Dictionary<int, Texture> glTexByHashId = new Dictionary<int, Texture>();
 
         public ushort Version = 0x0200;
+        public int filesIndex;
+        public int startOffset;
 
         public override Endianness Endian { get; set; }
 
@@ -249,6 +251,7 @@ namespace SmashForge
         public NUT(FileData d) : this()
         {
             Read(d);
+            Text = "texture.nut";
         }
 
         public bool getTextureByID(int hash, out NutTexture suc)
@@ -819,6 +822,8 @@ namespace SmashForge
             {
                 if (!glTexByHashId.ContainsKey(tex.HashId))
                 {
+                    if (Text.Contains("iris"))
+                        tex.HashId = 1;
                     // Check if the texture is a cube map.
                     if (tex.surfaces.Count == 6)
                         glTexByHashId.Add(tex.HashId, CreateTextureCubeMap(tex));

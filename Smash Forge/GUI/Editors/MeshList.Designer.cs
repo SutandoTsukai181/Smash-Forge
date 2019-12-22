@@ -51,6 +51,7 @@
             this.generateTanBitanToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.detachToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToNewNudToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vertexColorUtilstripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setToWhiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -149,7 +150,6 @@
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.xmbContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -165,6 +165,7 @@
             // 
             // filesTreeView
             // 
+            this.filesTreeView.AllowDrop = true;
             this.filesTreeView.CheckBoxes = true;
             this.filesTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.filesTreeView.HideSelection = false;
@@ -176,7 +177,11 @@
             this.filesTreeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
             this.filesTreeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
             this.filesTreeView.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.filesTreeView_AfterExpand);
+            this.filesTreeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.filesTreeView_ItemDrag);
             this.filesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.filesTreeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.filesTreeView_DragDrop);
+            this.filesTreeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.filesTreeView_DragEnter);
+            this.filesTreeView.DragOver += new System.Windows.Forms.DragEventHandler(this.filesTreeView_DragOver);
             this.filesTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
             this.filesTreeView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.treeView1_KeyPress);
             this.filesTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseDown);
@@ -238,7 +243,7 @@
             this.vertexColorUtilstripMenuItem,
             this.polyFormatToolStripMenuItem});
             this.polyContextMenu.Name = "polyContextMenu";
-            this.polyContextMenu.Size = new System.Drawing.Size(216, 416);
+            this.polyContextMenu.Size = new System.Drawing.Size(216, 388);
             this.polyContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // editMaterialToolStripMenuItem
@@ -326,14 +331,14 @@
             // recalculateToolStripMenuItem1
             // 
             this.recalculateToolStripMenuItem1.Name = "recalculateToolStripMenuItem1";
-            this.recalculateToolStripMenuItem1.Size = new System.Drawing.Size(168, 26);
+            this.recalculateToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.recalculateToolStripMenuItem1.Text = "Recalculate";
             this.recalculateToolStripMenuItem1.Click += new System.EventHandler(this.recalculateToolStripMenuItem1_Click);
             // 
             // smoothToolStripMenuItem1
             // 
             this.smoothToolStripMenuItem1.Name = "smoothToolStripMenuItem1";
-            this.smoothToolStripMenuItem1.Size = new System.Drawing.Size(168, 26);
+            this.smoothToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.smoothToolStripMenuItem1.Text = "Smooth";
             this.smoothToolStripMenuItem1.Click += new System.EventHandler(this.smoothToolStripMenuItem1_Click);
             // 
@@ -356,6 +361,13 @@
             this.detachToolStripMenuItem.Text = "Detach";
             this.detachToolStripMenuItem.Click += new System.EventHandler(this.detachToolStripMenuItem_Click);
             // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(215, 24);
+            this.toolStripMenuItem3.Text = "Reposition";
+            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
             // copyToNewNudToolStripMenuItem
             // 
             this.copyToNewNudToolStripMenuItem.Name = "copyToNewNudToolStripMenuItem";
@@ -376,14 +388,14 @@
             // setToWhiteToolStripMenuItem
             // 
             this.setToWhiteToolStripMenuItem.Name = "setToWhiteToolStripMenuItem";
-            this.setToWhiteToolStripMenuItem.Size = new System.Drawing.Size(194, 26);
+            this.setToWhiteToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.setToWhiteToolStripMenuItem.Text = "Set to White";
             this.setToWhiteToolStripMenuItem.Click += new System.EventHandler(this.setToWhiteToolStripMenuItem_Click);
             // 
             // selectColorUtilstripMenuItem
             // 
             this.selectColorUtilstripMenuItem.Name = "selectColorUtilstripMenuItem";
-            this.selectColorUtilstripMenuItem.Size = new System.Drawing.Size(194, 26);
+            this.selectColorUtilstripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.selectColorUtilstripMenuItem.Text = "Select Color";
             this.selectColorUtilstripMenuItem.Click += new System.EventHandler(this.selectColorUtilstripMenuItem_Click);
             // 
@@ -395,7 +407,7 @@
             this.normalsToolStripMenuItem,
             this.uVsToolStripMenuItem1});
             this.setToTangentsToolStripMenuItem.Name = "setToTangentsToolStripMenuItem";
-            this.setToTangentsToolStripMenuItem.Size = new System.Drawing.Size(194, 26);
+            this.setToTangentsToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.setToTangentsToolStripMenuItem.Text = "Set to Attribute";
             // 
             // tangentsToolStripMenuItem
@@ -453,7 +465,7 @@
             // renameToolStripMenuItem
             // 
             this.renameToolStripMenuItem.Name = "renameToolStripMenuItem";
-            this.renameToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.renameToolStripMenuItem.Size = new System.Drawing.Size(209, 24);
             this.renameToolStripMenuItem.Text = "Rename";
             this.renameToolStripMenuItem.Click += new System.EventHandler(this.renameToolStripMenuItem_Click);
             // 
@@ -463,7 +475,7 @@
             this.aboveToolStripMenuItem1,
             this.belowToolStripMenuItem1});
             this.mergeToolStripMenuItem1.Name = "mergeToolStripMenuItem1";
-            this.mergeToolStripMenuItem1.Size = new System.Drawing.Size(210, 24);
+            this.mergeToolStripMenuItem1.Size = new System.Drawing.Size(209, 24);
             this.mergeToolStripMenuItem1.Text = "Merge";
             // 
             // aboveToolStripMenuItem1
@@ -483,33 +495,33 @@
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(210, 24);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(209, 24);
             this.toolStripMenuItem1.Text = "Reposition";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // singleBindToBoneToolStripMenuItem
             // 
             this.singleBindToBoneToolStripMenuItem.Name = "singleBindToBoneToolStripMenuItem";
-            this.singleBindToBoneToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.singleBindToBoneToolStripMenuItem.Size = new System.Drawing.Size(209, 24);
             this.singleBindToBoneToolStripMenuItem.Text = "Single Bind to Bone";
             this.singleBindToBoneToolStripMenuItem.Click += new System.EventHandler(this.singleBindToBoneToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(207, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(206, 6);
             // 
             // deleteToolStripMenuItem1
             // 
             this.deleteToolStripMenuItem1.Name = "deleteToolStripMenuItem1";
-            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(210, 24);
+            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(209, 24);
             this.deleteToolStripMenuItem1.Text = "Delete";
             this.deleteToolStripMenuItem1.Click += new System.EventHandler(this.deleteToolStripMenuItem1_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(207, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(206, 6);
             // 
             // calculateNormalsToolStripMenuItem1
             // 
@@ -517,7 +529,7 @@
             this.recalculateToolStripMenuItem,
             this.smoothToolStripMenuItem});
             this.calculateNormalsToolStripMenuItem1.Name = "calculateNormalsToolStripMenuItem1";
-            this.calculateNormalsToolStripMenuItem1.Size = new System.Drawing.Size(210, 24);
+            this.calculateNormalsToolStripMenuItem1.Size = new System.Drawing.Size(209, 24);
             this.calculateNormalsToolStripMenuItem1.Text = "Normals";
             // 
             // recalculateToolStripMenuItem
@@ -537,7 +549,7 @@
             // generateTanBitanToolStripMenuItem2
             // 
             this.generateTanBitanToolStripMenuItem2.Name = "generateTanBitanToolStripMenuItem2";
-            this.generateTanBitanToolStripMenuItem2.Size = new System.Drawing.Size(210, 24);
+            this.generateTanBitanToolStripMenuItem2.Size = new System.Drawing.Size(209, 24);
             this.generateTanBitanToolStripMenuItem2.Text = "Generate Tan/Bitan";
             this.generateTanBitanToolStripMenuItem2.Click += new System.EventHandler(this.generateTanBitanToolStripMenuItem2_Click);
             // 
@@ -548,7 +560,7 @@
             this.selectColorUtilstripMenuItem1,
             this.setToAttributeToolStripMenuItem});
             this.vertexColorUtilstripMenuItem1.Name = "vertexColorUtilstripMenuItem1";
-            this.vertexColorUtilstripMenuItem1.Size = new System.Drawing.Size(210, 24);
+            this.vertexColorUtilstripMenuItem1.Size = new System.Drawing.Size(209, 24);
             this.vertexColorUtilstripMenuItem1.Text = "Vertex Color";
             // 
             // setToWhiteToolStripMenuItem1
@@ -1117,13 +1129,6 @@
             this.openViewerToolStripMenuItem.Size = new System.Drawing.Size(163, 24);
             this.openViewerToolStripMenuItem.Text = "Open Viewer";
             this.openViewerToolStripMenuItem.Click += new System.EventHandler(this.openViewerToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(215, 24);
-            this.toolStripMenuItem3.Text = "Reposition";
-            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // MeshList
             // 

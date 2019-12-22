@@ -814,6 +814,8 @@ namespace SmashForge
                 FrameBoundableModel((IBoundableModel)meshList.filesTreeView.SelectedNode);
             else if (meshList.filesTreeView.SelectedNode is ModelContainer)
                 FrameSelectedModelContainer();
+            else if (meshList.filesTreeView.SelectedNode is XfbinContainer)
+                FrameSelectedXfbinContainer();
             else if (meshList.filesTreeView.SelectedNode is BFRES)
                 FrameSelectedBfres();
             else
@@ -826,6 +828,11 @@ namespace SmashForge
                 {
                     ModelContainer modelContainer = (ModelContainer)node;
                     modelContainer.DepthSortModels(camera.TransformedPosition);
+                }
+                else if (node is XfbinContainer)
+                {
+                    XfbinContainer xfbinContainer = (XfbinContainer)node;
+                    xfbinContainer.DepthSortModels(camera.TransformedPosition);
                 }
             }
         }
@@ -856,6 +863,38 @@ namespace SmashForge
                 }
             }
 
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 10);
+            camera.UpdateFromMouse();
+        }
+
+        private void FrameSelectedXfbinContainer()
+        {
+            XfbinContainer xfbinContainer = (XfbinContainer)meshList.filesTreeView.SelectedNode;
+            float[] boundingSphere = new float[] { 0, 0, 0, 0 };
+
+            // Use the main bounding box for the NUD.
+            foreach (Nud n in xfbinContainer.NUDs)
+            {
+                if (n.boundingSphere[3] > boundingSphere[3])
+                {
+                    boundingSphere[0] = n.boundingSphere[0];
+                    boundingSphere[1] = n.boundingSphere[1];
+                    boundingSphere[2] = n.boundingSphere[2];
+                    boundingSphere[3] = n.boundingSphere[3];
+                }
+                // It's possible that only the individual meshes have bounding boxes.
+                foreach (Nud.Mesh mesh in n.Nodes)
+                {
+                    if (mesh.boundingSphere[3] > boundingSphere[3])
+                    {
+                        boundingSphere[0] = mesh.boundingSphere[0];
+                        boundingSphere[1] = mesh.boundingSphere[1];
+                        boundingSphere[2] = mesh.boundingSphere[2];
+                        boundingSphere[3] = mesh.boundingSphere[3];
+                    }
+                }
+            }
+            
             camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 10);
             camera.UpdateFromMouse();
         }
@@ -914,6 +953,24 @@ namespace SmashForge
                                 m.GenerateBoundingSpheres();
                                 spheres.Add(m.BoundingSphere);
                             }
+                        }
+                    }
+                }
+
+                else if (node is XfbinContainer)
+                {
+                    hasModelContainers = true;
+                    XfbinContainer xfbinContainer = (XfbinContainer)node;
+
+                    foreach (Nud n in xfbinContainer.NUDs)
+                    {
+                        // Use the main bounding box for each NUD.
+                        spheres.Add(n.BoundingSphere);
+
+                        // It's possible that only the individual meshes have bounding boxes.
+                        foreach (Nud.Mesh mesh in n.Nodes)
+                        {
+                            spheres.Add(mesh.BoundingSphere);
                         }
                     }
                 }
@@ -1308,6 +1365,17 @@ namespace SmashForge
                         Runtime.ftexContainerList.Remove(m.Bfres.FTEXContainer);
                     }
                 }
+                else if (node is XfbinContainer)
+                {
+                    XfbinContainer x = (XfbinContainer)node;
+                    if (x.NUTs != null)
+                    {
+                        foreach (NUT n in x.NUTs)
+                        {
+                            Runtime.textureContainers.Remove(n);
+                        }
+                    }
+                }
             }
             draw.Clear();
         }
@@ -1395,22 +1463,48 @@ namespace SmashForge
 
                     foreach (TreeNode node in draw)
                     {
-                        if (!(node is ModelContainer)) continue;
-                        ModelContainer con = (ModelContainer)node;
-                        foreach (Nud.Mesh mesh in con.NUD.Nodes)
+                        if (node is ModelContainer)
                         {
-                            foreach (Nud.Polygon poly in mesh.Nodes)
+                            ModelContainer con = (ModelContainer)node;
+                            foreach (Nud.Mesh mesh in con.NUD.Nodes)
                             {
-                                //if (!poly.IsSelected && !mesh.IsSelected) continue;
-                                int i = 0;
-                                foreach (Nud.Vertex v in poly.vertices)
+                                foreach (Nud.Polygon poly in mesh.Nodes)
                                 {
-                                    if (!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
-                                        poly.selectedVerts[i] = 0;
-                                    Vector3 n = GetScreenPoint(v.pos);
-                                    if (n.X >= minx && n.Y >= miny && n.X <= minx + width && n.Y <= miny + height)
-                                        poly.selectedVerts[i] = 1;
-                                    i++;
+                                    //if (!poly.IsSelected && !mesh.IsSelected) continue;
+                                    int i = 0;
+                                    foreach (Nud.Vertex v in poly.vertices)
+                                    {
+                                        if (!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
+                                            poly.selectedVerts[i] = 0;
+                                        Vector3 n = GetScreenPoint(v.pos);
+                                        if (n.X >= minx && n.Y >= miny && n.X <= minx + width && n.Y <= miny + height)
+                                            poly.selectedVerts[i] = 1;
+                                        i++;
+                                    }
+                                }
+                            }
+                        }
+                        else if (node is XfbinContainer)
+                        {
+                            XfbinContainer con = (XfbinContainer)node;
+                            foreach (Nud nud in con.NUDs)
+                            {
+                                foreach (Nud.Mesh mesh in nud.Nodes)
+                                {
+                                    foreach (Nud.Polygon poly in mesh.Nodes)
+                                    {
+                                        //if (!poly.IsSelected && !mesh.IsSelected) continue;
+                                        int i = 0;
+                                        foreach (Nud.Vertex v in poly.vertices)
+                                        {
+                                            if (!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
+                                                poly.selectedVerts[i] = 0;
+                                            Vector3 n = GetScreenPoint(v.pos);
+                                            if (n.X >= minx && n.Y >= miny && n.X <= minx + width && n.Y <= miny + height)
+                                                poly.selectedVerts[i] = 1;
+                                            i++;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1423,41 +1517,84 @@ namespace SmashForge
                     Ray r = RenderTools.CreateRay(camera.MvpMatrix, GetMouseOnViewport());
                     foreach (TreeNode node in draw)
                     {
-                        if (!(node is ModelContainer)) continue;
-                        ModelContainer con = (ModelContainer)node;
-                        Nud.Polygon closestPolygon = null;
-                        int index = 0;
-                        double mindis = 999;
-                        foreach (Nud.Mesh mesh in con.NUD.Nodes)
+                        if (node is ModelContainer)
                         {
-                            foreach (Nud.Polygon poly in mesh.Nodes)
+                            ModelContainer con = (ModelContainer)node;
+                            Nud.Polygon closestPolygon = null;
+                            int index = 0;
+                            double mindis = 999;
+                            foreach (Nud.Mesh mesh in con.NUD.Nodes)
                             {
-                                //if (!poly.IsSelected && !mesh.IsSelected) continue;
-                                int i = 0;
-                                foreach (Nud.Vertex v in poly.vertices)
+                                foreach (Nud.Polygon poly in mesh.Nodes)
                                 {
-                                    //if (!poly.IsSelected) continue;
-                                    if (!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
-                                        poly.selectedVerts[i] = 0;
-
-                                    Vector3 closest;
-                                    if (r.TrySphereHit(v.pos, 0.2f, out closest))
+                                    //if (!poly.IsSelected && !mesh.IsSelected) continue;
+                                    int i = 0;
+                                    foreach (Nud.Vertex v in poly.vertices)
                                     {
-                                        double dis = r.Distance(closest);
-                                        if (dis < mindis)
+                                        //if (!poly.IsSelected) continue;
+                                        if (!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
+                                            poly.selectedVerts[i] = 0;
+
+                                        Vector3 closest;
+                                        if (r.TrySphereHit(v.pos, 0.2f, out closest))
                                         {
-                                            mindis = dis;
-                                            closestPolygon = poly;
-                                            index = i;
+                                            double dis = r.Distance(closest);
+                                            if (dis < mindis)
+                                            {
+                                                mindis = dis;
+                                                closestPolygon = poly;
+                                                index = i;
+                                            }
                                         }
+                                        i++;
                                     }
-                                    i++;
                                 }
                             }
+                            if (closestPolygon != null)
+                            {
+                                closestPolygon.selectedVerts[index] = 1;
+                            }
                         }
-                        if (closestPolygon != null)
+                        else if (node is XfbinContainer)
                         {
-                            closestPolygon.selectedVerts[index] = 1;
+                            XfbinContainer con = (XfbinContainer)node;
+                            Nud.Polygon closestPolygon = null;
+                            int index = 0;
+                            double mindis = 999;
+                            foreach (Nud nud in con.NUDs)
+                            {
+                                foreach (Nud.Mesh mesh in nud.Nodes)
+                                {
+                                    foreach (Nud.Polygon poly in mesh.Nodes)
+                                    {
+                                        //if (!poly.IsSelected && !mesh.IsSelected) continue;
+                                        int i = 0;
+                                        foreach (Nud.Vertex v in poly.vertices)
+                                        {
+                                            //if (!poly.IsSelected) continue;
+                                            if (!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
+                                                poly.selectedVerts[i] = 0;
+
+                                            Vector3 closest;
+                                            if (r.TrySphereHit(v.pos, 0.2f, out closest))
+                                            {
+                                                double dis = r.Distance(closest);
+                                                if (dis < mindis)
+                                                {
+                                                    mindis = dis;
+                                                    closestPolygon = poly;
+                                                    index = i;
+                                                }
+                                            }
+                                            i++;
+                                        }
+                                    }
+                                }
+                            }
+                            if (closestPolygon != null)
+                            {
+                                closestPolygon.selectedVerts[index] = 1;
+                            }
                         }
                     }
                 }
@@ -1466,21 +1603,45 @@ namespace SmashForge
                 vertexTool.vertexListBox.Items.Clear();
                 foreach (TreeNode node in draw)
                 {
-                    if (!(node is ModelContainer)) continue;
-                    ModelContainer con = (ModelContainer)node;
-                    foreach (Nud.Mesh mesh in con.NUD.Nodes)
+                    if (node is ModelContainer)
                     {
-                        foreach (Nud.Polygon poly in mesh.Nodes)
+                        ModelContainer con = (ModelContainer)node;
+                        foreach (Nud.Mesh mesh in con.NUD.Nodes)
                         {
-                            int i = 0;
-                            foreach (Nud.Vertex v in poly.vertices)
+                            foreach (Nud.Polygon poly in mesh.Nodes)
                             {
-                                if (poly.selectedVerts[i++] == 1)
+                                int i = 0;
+                                foreach (Nud.Vertex v in poly.vertices)
                                 {
-                                    vertexTool.vertexListBox.Items.Add(v);
+                                    if (poly.selectedVerts[i++] == 1)
+                                    {
+                                        vertexTool.vertexListBox.Items.Add(v);
+                                    }
                                 }
                             }
                         }
+                    }
+                    else if (node is XfbinContainer)
+                    {
+                        XfbinContainer con = (XfbinContainer)node;
+                        foreach (Nud nud in con.NUDs)
+                        {
+                            foreach (Nud.Mesh mesh in nud.Nodes)
+                            {
+                                foreach (Nud.Polygon poly in mesh.Nodes)
+                                {
+                                    int i = 0;
+                                    foreach (Nud.Vertex v in poly.vertices)
+                                    {
+                                        if (poly.selectedVerts[i++] == 1)
+                                        {
+                                            vertexTool.vertexListBox.Items.Add(v);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                     }
                 }
                 vertexTool.vertexListBox.EndUpdate();
@@ -1736,13 +1897,19 @@ namespace SmashForge
                     }
                     if (m is ModelContainer)
                         ((ModelContainer)m).Render(camera, depthMap, lightMatrix, new Vector2(glViewport.Width, glViewport.Height), drawShadow);
+                    if (m is XfbinContainer)
+                        ((XfbinContainer)m).Render(camera, depthMap, lightMatrix, new Vector2(glViewport.Width, glViewport.Height), drawShadow);
 
                 }
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)
+                {
                     if (m is ModelContainer)
                         ((ModelContainer)m).RenderPoints(camera);
+                    if (m is XfbinContainer)
+                        ((XfbinContainer)m).RenderPoints(camera);
+                }
         }
 
         private void DrawOverlays()
@@ -2138,14 +2305,25 @@ namespace SmashForge
             // Regenerate all the texture objects.
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
-                if (!(node is ModelContainer))
-                    continue;
+                if (node is ModelContainer)
+                {
+                    ModelContainer m = (ModelContainer)node;
 
-                ModelContainer m = (ModelContainer)node;
+                    m.NUT?.RefreshGlTexturesByHashId();
+                    m.BNTX?.RefreshGlTexturesByName();
+                    m.Bfres?.FTEXContainer?.RefreshGlTexturesByName();
+                }
+                else if (node is XfbinContainer)
+                {
+                    XfbinContainer m = (XfbinContainer)node;
 
-                m.NUT?.RefreshGlTexturesByHashId();
-                m.BNTX?.RefreshGlTexturesByName();
-                m.Bfres?.FTEXContainer?.RefreshGlTexturesByName();
+                    foreach (NUT n in m.NUTs)
+                        n?.RefreshGlTexturesByHashId();
+                }
+                else if (node is NUT) // This is to allow adding individual Nuts to the meshList 
+                {
+                    (node as NUT)?.RefreshGlTexturesByHashId();
+                }
             }
         }
     }

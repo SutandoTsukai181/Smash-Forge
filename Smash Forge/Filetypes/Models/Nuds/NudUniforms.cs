@@ -120,12 +120,17 @@ namespace SmashForge.Filetypes.Models.Nuds
             return values;
         }
 
-        public static Texture GetTexture(int hash, Nud.MatTexture matTexture, int loc, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
+        public static Texture GetTexture(int hash, Nud.MatTexture matTexture, int loc, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, int texType)
         {
             // Look through all loaded textures and not just the current modelcontainer.
             foreach (NUT nut in Runtime.textureContainers)
             {
                 Texture texture;
+                if (nut.Text != "texture.nut")
+                {
+                    if (texType == 1)
+                        hash = 1; // not functional
+                }
                 if (nut.glTexByHashId.TryGetValue(hash, out texture))
                 {
                     SetTextureParameters(texture, matTexture);
@@ -188,7 +193,7 @@ namespace SmashForge.Filetypes.Models.Nuds
             if (hasTex && textureIndex < mat.textures.Count)
             {
                 // We won't know what type a texture is used for until we iterate through the textures.
-                texture = GetTexture(mat.textures[textureIndex].hash, mat.textures[textureIndex], textureIndex, dummyTextures);
+                texture = GetTexture(mat.textures[textureIndex].hash, mat.textures[textureIndex], textureIndex, dummyTextures, mat.texType);
                 textureIndex++;
             }
             else
