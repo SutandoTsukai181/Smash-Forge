@@ -159,17 +159,22 @@ namespace SmashForge
                     state = 2;
                     continue;
                 }
-                if (s.Contains("bod1"))
+                if (state == 1)
+                {
+                    if (!s.Contains(" "))
+                    {
+                        s = s.Substring(s.IndexOf('_') + 1);
+                        if (groupNames.ContainsKey(s))
+                            s += "2";
+                        groupNames.Add(s, 0);
+                    }
+                }
+                if (s.Contains("bod") && !s.Contains(" ") && !s.Contains("body"))
                 {
                     if (state == 0)
                     {
                         state = 1;
                         continue;
-                    }
-                    if (!s.Contains(" "))
-                    {
-                        s = s.Substring(s.IndexOf('_') + 1);
-                        groupNames.Add(s, 0);
                     }
                 }
             }
