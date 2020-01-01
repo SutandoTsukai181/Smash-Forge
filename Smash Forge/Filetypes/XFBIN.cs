@@ -143,40 +143,47 @@ namespace SmashForge
                     continue;
                 fileNames.Add(s);
             }
-
-            // Read group and bone names
-            int state = 0;
-            for (int x = 0; x < fileNames.Count; x++)
+            try
             {
-                string s = fileNames[x];
-                if (state == 2)
+                // Read group and bone names
+                int state = 0;
+                for (int x = 0; x < fileNames.Count; x++)
                 {
-                    if (s.Contains(" "))
-                        boneNames.Add(s);
-                }
-                else if (s.Contains("trall"))
-                {
-                    state = 2;
-                    continue;
-                }
-                if (state == 1)
-                {
-                    if (!s.Contains(" "))
+                    string s = fileNames[x];
+                    if (state == 2)
                     {
-                        s = s.Substring(s.IndexOf('_') + 1);
-                        if (groupNames.ContainsKey(s))
-                            s += "2";
-                        groupNames.Add(s, 0);
+                        if (s.Contains(" "))
+                            boneNames.Add(s);
                     }
-                }
-                if (s.Contains("bod") && !s.Contains(" ") && !s.Contains("body"))
-                {
-                    if (state == 0)
+                    else if (s.Contains("trall"))
                     {
-                        state = 1;
+                        state = 2;
                         continue;
                     }
+                    if (state == 1)
+                    {
+                        if (!s.Contains(" "))
+                        {
+                            s = s.Substring(s.IndexOf('_') + 1);
+                            if (groupNames.ContainsKey(s))
+                                s += "2";
+                            groupNames.Add(s, 0);
+                        }
+                    }
+                    if (s.Contains("bod") && !s.Contains(" ") && !s.Contains("body"))
+                    {
+                        if (state == 0)
+                        {
+                            state = 1;
+                            continue;
+                        }
+                    }
                 }
+            }
+            catch
+            {
+                groupNames.Clear();
+                MessageBox.Show("Group bytes have to be changed manually.", "Warning", MessageBoxButtons.OK);
             }
 
             //padding should be read here
@@ -283,7 +290,7 @@ namespace SmashForge
                     {
                         int b = fileData.ReadInt();
                         ((Nud.Polygon)nud.FirstNode.Nodes[x]).groupByte = b;
-                        if (!groupNames.ContainsValue(b))
+                        if (groupNames.Any() && !groupNames.ContainsValue(b))
                         {
                             KeyValuePair<string, int> p =  groupNames.SkipWhile(pair => pair.Value != 0).First();
                             groupNames[p.Key] = b;
