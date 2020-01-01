@@ -35,7 +35,6 @@ namespace SmashForge
         public int filesIndex;
         public int sizeOffset;
         public int startOffset;
-        public List<int> groups;
 
         //If the ModelContainer of the NUD has no bones, we will write the type as 0 regardless of this value
         //If it does have bones, this value will be written as normal. 2 is common but it can also validly be 0 and other values

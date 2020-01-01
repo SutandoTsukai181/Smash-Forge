@@ -152,6 +152,10 @@
             this.openViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.XfbinContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.saveXfbinStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeOrderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteBonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -230,7 +234,8 @@
             this.copyMaterialToolStripMenuItem,
             this.useAOAsSpecToolStripMenuItem1,
             this.toolStripSeparator1,
-            this.deleteToolStripMenuItem,
+            this.toolStripMenuItem3,
+            this.changeOrderToolStripMenuItem,
             this.duplicateToolStripMenuItem,
             this.toolStripSeparator2,
             this.flipUVsToolStripMenuItem,
@@ -240,13 +245,14 @@
             this.smoothNormalsToolStripMenuItem,
             this.generateTanBitanToolStripMenuItem1,
             this.toolStripSeparator3,
+            this.deleteToolStripMenuItem,
+            this.deleteBonesToolStripMenuItem,
             this.detachToolStripMenuItem,
-            this.toolStripMenuItem3,
             this.copyToNewNudToolStripMenuItem,
             this.vertexColorUtilstripMenuItem,
             this.polyFormatToolStripMenuItem});
             this.polyContextMenu.Name = "polyContextMenu";
-            this.polyContextMenu.Size = new System.Drawing.Size(216, 388);
+            this.polyContextMenu.Size = new System.Drawing.Size(216, 464);
             this.polyContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // editMaterialToolStripMenuItem
@@ -1148,6 +1154,36 @@
             this.saveXfbinStripMenuItem.Text = "Save as Xfbin";
             this.saveXfbinStripMenuItem.Click += new System.EventHandler(this.saveXfbinToolStripMenuItem_Click);
             // 
+            // changeOrderToolStripMenuItem
+            // 
+            this.changeOrderToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.moveUpToolStripMenuItem,
+            this.moveDownToolStripMenuItem});
+            this.changeOrderToolStripMenuItem.Name = "changeOrderToolStripMenuItem";
+            this.changeOrderToolStripMenuItem.Size = new System.Drawing.Size(215, 24);
+            this.changeOrderToolStripMenuItem.Text = "Change Order";
+            // 
+            // moveUpToolStripMenuItem
+            // 
+            this.moveUpToolStripMenuItem.Name = "moveUpToolStripMenuItem";
+            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.moveUpToolStripMenuItem.Text = "Move Up";
+            this.moveUpToolStripMenuItem.Click += new System.EventHandler(this.moveUpToolStripMenuItem_Click);
+            // 
+            // moveDownToolStripMenuItem
+            // 
+            this.moveDownToolStripMenuItem.Name = "moveDownToolStripMenuItem";
+            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.moveDownToolStripMenuItem.Text = "Move Down";
+            this.moveDownToolStripMenuItem.Click += new System.EventHandler(this.moveDownToolStripMenuItem_Click);
+            // 
+            // deleteBonesToolStripMenuItem
+            // 
+            this.deleteBonesToolStripMenuItem.Name = "deleteBonesToolStripMenuItem";
+            this.deleteBonesToolStripMenuItem.Size = new System.Drawing.Size(215, 24);
+            this.deleteBonesToolStripMenuItem.Text = "Delete Bones";
+            this.deleteBonesToolStripMenuItem.Click += new System.EventHandler(this.deleteBonesToolStripMenuItem_Click);
+            // 
             // MeshList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
@@ -1302,5 +1338,9 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ContextMenuStrip XfbinContextMenu;
         private System.Windows.Forms.ToolStripMenuItem saveXfbinStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changeOrderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem moveUpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem moveDownToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteBonesToolStripMenuItem;
     }
 }

@@ -38,6 +38,8 @@ namespace SmashForge
             public List<int> vertexIndices = new List<int>();
             public int displayFaceSize = 0;
 
+            public int groupByte;
+
             public NudRenderMesh renderMesh;
 
             public List<Material> materials = new List<Material>();
@@ -365,6 +367,17 @@ namespace SmashForge
                 polygon.vertSize = vertSize;
 
                 return polygon;
+            }
+
+            public void DeleteBones() // polygons might disappear depending on lighting conditions (jojo)
+            {
+                foreach (Vertex v in vertices)
+                {
+                    v.boneIds[0] = 0;
+                    v.boneIds[1] = 0;
+                    v.boneIds[2] = 0;
+                    v.boneIds[3] = 0;
+                }
             }
         }
     }

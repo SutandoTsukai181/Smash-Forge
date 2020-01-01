@@ -19,9 +19,11 @@ namespace SmashForge
 
         public Dictionary<int, object> files = new Dictionary<int, object>(); // int index, object file
         public Dictionary<int, int> offsets = new Dictionary<int, int>(); // int index, int headerOffset
+        public Dictionary<string, int> groupNames = new Dictionary<string, int>(); // string group name, int group byte
         public List<string> nuccProperties = new List<string>();
         public List<string> directories = new List<string>();
         public List<string> fileNames = new List<string>();
+        public List<string> boneNames = new List<string>();
 
         public int paddingFlag;
         public int firstFileStart;
@@ -133,11 +135,43 @@ namespace SmashForge
             }
 
             // File names/included files
-            fileData.Skip(1);
             for (int x = 0; x < fileNameCount; x++)
             {
-                fileNames.Add(fileData.ReadString());
                 fileData.Skip(1);
+                string s = fileData.ReadString();
+                if (s == "Page0" || s == "index")
+                    continue;
+                fileNames.Add(s);
+            }
+
+            // Read group and bone names
+            int state = 0;
+            for (int x = 0; x < fileNames.Count; x++)
+            {
+                string s = fileNames[x];
+                if (state == 2)
+                {
+                    if (s.Contains(" "))
+                        boneNames.Add(s);
+                }
+                else if (s.Contains("trall"))
+                {
+                    state = 2;
+                    continue;
+                }
+                if (s.Contains("bod1"))
+                {
+                    if (state == 0)
+                    {
+                        state = 1;
+                        continue;
+                    }
+                    if (!s.Contains(" "))
+                    {
+                        s = s.Substring(s.IndexOf('_') + 1);
+                        groupNames.Add(s, 0);
+                    }
+                }
             }
 
             //padding should be read here
@@ -240,12 +274,16 @@ namespace SmashForge
                     files.Add(files.Count, nud);
                     
                     int groups = fileData.ReadShort();
-                    List<int> bytes = new List<int>();
                     for (int x = 0; x < groups; x++)
                     {
-                        bytes.Add(fileData.ReadInt());
+                        int b = fileData.ReadInt();
+                        ((Nud.Polygon)nud.FirstNode.Nodes[x]).groupByte = b;
+                        if (!groupNames.ContainsValue(b))
+                        {
+                            KeyValuePair<string, int> p =  groupNames.SkipWhile(pair => pair.Value != 0).First();
+                            groupNames[p.Key] = b;
+                        }
                     }
-                    nud.groups = bytes;
                     break;
 
                 case (uint)Header.NTP3:
@@ -348,7 +386,7 @@ namespace SmashForge
 
             // Get difference in size
             int diff = file.Length - size;
-            diff += (nud.groups.Count - groups) * 4;
+            diff += (nud.FirstNode.Nodes.Count - groups) * 4;
 
             fileData.Seek(offsets[nud.filesIndex]);
             int oldHead = fileData.ReadInt();
@@ -361,10 +399,10 @@ namespace SmashForge
             }
             d.WriteBytes(file);
 
-            d.WriteShort(nud.groups.Count);
-            foreach (int x in nud.groups)
+            d.WriteShort(nud.FirstNode.Nodes.Count);
+            foreach (Nud.Polygon p in  nud.FirstNode.Nodes)
             {
-                d.WriteInt(x);
+                d.WriteInt(p.groupByte);
             }
         }
 

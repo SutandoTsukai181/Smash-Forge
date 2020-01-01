@@ -1972,11 +1972,16 @@ namespace SmashForge
         {
             System.Drawing.Point targetPoint = filesTreeView.PointToClient(new System.Drawing.Point(e.X, e.Y));
             TreeNode targetNode = filesTreeView.GetNodeAt(targetPoint);
-            
+
             // Confirm that the node at the drop location is not 
             // the dragged node or a descendant of the dragged node.
+            if (draggedNode == null)
+                return;
             if (!draggedNode.Equals(targetNode) && IsValidNode(draggedNode, targetNode))
             {
+                // Change group bytes if parent xfbin was changed
+                xfbinCheck(draggedNode, targetNode);
+
                 // If it is a move operation, remove the node from its current 
                 // location and add it to the node at the drop location.
                 if (e.Effect == DragDropEffects.Move)
@@ -1995,6 +2000,79 @@ namespace SmashForge
                 // Expand the node at the location 
                 // to show the dropped node.
                 targetNode.Expand();
+            }
+        }
+
+        private void xfbinCheck(TreeNode node1, TreeNode node2)
+        {
+            Xfbin x1;
+            Xfbin x2;
+            switch (formats[node1.GetType().FullName])
+            {
+                case 1:
+                    x1 = ((XfbinContainer)node1.Parent).XFBIN;
+                    x2 = ((XfbinContainer)node2).XFBIN;
+                    if (x1 == x2)
+                        return;
+
+                    foreach (Nud.Polygon p in  node1.FirstNode.Nodes)
+                    {
+                        changeGroups(p, x1, x2);
+                    }
+
+                    break;
+                case 2:
+                    x1 = ((XfbinContainer)node1.Parent.Parent).XFBIN;
+                    x2 = ((XfbinContainer)node2.Parent).XFBIN;
+                    if (x1 == x2)
+                        return;
+
+                    foreach (Nud.Polygon p in node1.Nodes)
+                    {
+                        changeGroups(p, x1, x2);
+                    }
+                    
+                    break;
+                case 3:
+                    x1 = ((XfbinContainer)node1.Parent.Parent.Parent).XFBIN; // heh
+                    x2 = ((XfbinContainer)node2.Parent.Parent).XFBIN;
+                    if (x1 == x2)
+                        return;
+
+                    Nud.Polygon poly = (Nud.Polygon)node1;
+                    changeGroups(poly, x1, x2);
+
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        private void changeGroups(Nud.Polygon poly, Xfbin x1, Xfbin x2)
+        {
+            string key = "";
+            int value;
+            foreach (KeyValuePair<string, int> p in x1.groupNames)
+            {
+                if (p.Value == poly.groupByte)
+                {
+                    key = p.Key;
+                    break;
+                }
+            }
+
+            if (x2.groupNames.TryGetValue(key, out value))
+                poly.groupByte = value;
+            else if (key == "gakuran") // hack to get a similar material; should compile a list later
+            {
+                x2.groupNames.TryGetValue("cloth", out value);
+                poly.groupByte = value; // also should make it work for both x1 and x2
+            }
+            else
+            {
+                poly.groupByte = x2.groupNames.Values.ElementAt(2); // just in case
+                if (poly.PrevNode != null && poly.groupByte == ((Nud.Polygon)poly.PrevNode).groupByte)
+                    poly.groupByte = x2.groupNames.Values.ElementAt(3);
             }
         }
 
@@ -2029,6 +2107,52 @@ namespace SmashForge
                 {
                     ((XfbinContainer)filesTreeView.SelectedNode).XFBIN.Save(filename);
                 }
+            }
+        }
+
+        private void moveUpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TreeNode node = filesTreeView.SelectedNode;
+
+            if (node.PrevNode == null)
+            {
+                return;
+            }
+
+            int newIndex = node.Index - 1;
+
+            var nodes = node.Parent.Nodes;
+            nodes.Remove(node);
+            nodes.Insert(newIndex, node);
+
+            filesTreeView.SelectedNode = node;
+        }
+
+        private void moveDownToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TreeNode node = filesTreeView.SelectedNode;
+
+            if (node.NextNode == null)
+            {
+                return;
+            }
+
+            int newIndex = node.Index + 1;
+
+            var nodes = node.Parent.Nodes;
+            nodes.Remove(node);
+            nodes.Insert(newIndex, node);
+
+            filesTreeView.SelectedNode = node;
+        }
+
+        private void deleteBonesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("This will zero-out all the bones for this polygon. Are you sure?", "Delete Bones", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                Nud.Polygon p = (Nud.Polygon)filesTreeView.SelectedNode;
+                p.DeleteBones();
             }
         }
     }
