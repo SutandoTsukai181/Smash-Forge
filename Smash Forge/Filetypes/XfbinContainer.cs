@@ -33,14 +33,18 @@ namespace SmashForge
                     else if (f.Value is NUT)
                         NUTs.Add((NUT)f.Value);
                 }
+                int n = 0;
                 foreach (NUT nut in NUTs)
                 {
-                    string name = xfbin.directories[xfbin.files.First(x => x.Value == nut).Key];
+                    //int index = xfbin.files.First(x => x.Value == nut).Key;
+                    //while (xfbin.directoryCount < index + 1) index--;
+                    string name = xfbin.directories[n];
                     nut.Text = name.Substring(name.LastIndexOfAny(new char[2] { '/', '\\' }) + 1);
                     foreach (Nud nud in NUDs)
                     {
                         nud.CheckTexIdErrors(nut);
                     }
+                    n++;
                 }
                 Refresh();
                 Text = xfbin.info.Name;

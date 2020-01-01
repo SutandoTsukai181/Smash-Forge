@@ -150,6 +150,8 @@
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.xmbContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.XfbinContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.saveXfbinStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -161,6 +163,7 @@
             this.bfresToolStripMenu.SuspendLayout();
             this.kclContextMenuStrip1.SuspendLayout();
             this.xmbContextMenu.SuspendLayout();
+            this.XfbinContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // filesTreeView
@@ -331,14 +334,14 @@
             // recalculateToolStripMenuItem1
             // 
             this.recalculateToolStripMenuItem1.Name = "recalculateToolStripMenuItem1";
-            this.recalculateToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
+            this.recalculateToolStripMenuItem1.Size = new System.Drawing.Size(168, 26);
             this.recalculateToolStripMenuItem1.Text = "Recalculate";
             this.recalculateToolStripMenuItem1.Click += new System.EventHandler(this.recalculateToolStripMenuItem1_Click);
             // 
             // smoothToolStripMenuItem1
             // 
             this.smoothToolStripMenuItem1.Name = "smoothToolStripMenuItem1";
-            this.smoothToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
+            this.smoothToolStripMenuItem1.Size = new System.Drawing.Size(168, 26);
             this.smoothToolStripMenuItem1.Text = "Smooth";
             this.smoothToolStripMenuItem1.Click += new System.EventHandler(this.smoothToolStripMenuItem1_Click);
             // 
@@ -388,14 +391,14 @@
             // setToWhiteToolStripMenuItem
             // 
             this.setToWhiteToolStripMenuItem.Name = "setToWhiteToolStripMenuItem";
-            this.setToWhiteToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.setToWhiteToolStripMenuItem.Size = new System.Drawing.Size(194, 26);
             this.setToWhiteToolStripMenuItem.Text = "Set to White";
             this.setToWhiteToolStripMenuItem.Click += new System.EventHandler(this.setToWhiteToolStripMenuItem_Click);
             // 
             // selectColorUtilstripMenuItem
             // 
             this.selectColorUtilstripMenuItem.Name = "selectColorUtilstripMenuItem";
-            this.selectColorUtilstripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.selectColorUtilstripMenuItem.Size = new System.Drawing.Size(194, 26);
             this.selectColorUtilstripMenuItem.Text = "Select Color";
             this.selectColorUtilstripMenuItem.Click += new System.EventHandler(this.selectColorUtilstripMenuItem_Click);
             // 
@@ -407,7 +410,7 @@
             this.normalsToolStripMenuItem,
             this.uVsToolStripMenuItem1});
             this.setToTangentsToolStripMenuItem.Name = "setToTangentsToolStripMenuItem";
-            this.setToTangentsToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.setToTangentsToolStripMenuItem.Size = new System.Drawing.Size(194, 26);
             this.setToTangentsToolStripMenuItem.Text = "Set to Attribute";
             // 
             // tangentsToolStripMenuItem
@@ -1130,6 +1133,21 @@
             this.openViewerToolStripMenuItem.Text = "Open Viewer";
             this.openViewerToolStripMenuItem.Click += new System.EventHandler(this.openViewerToolStripMenuItem_Click);
             // 
+            // XfbinContextMenu
+            // 
+            this.XfbinContextMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.XfbinContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveXfbinStripMenuItem});
+            this.XfbinContextMenu.Name = "MCContextMenu";
+            this.XfbinContextMenu.Size = new System.Drawing.Size(167, 28);
+            // 
+            // saveXfbinStripMenuItem
+            // 
+            this.saveXfbinStripMenuItem.Name = "saveXfbinStripMenuItem";
+            this.saveXfbinStripMenuItem.Size = new System.Drawing.Size(166, 24);
+            this.saveXfbinStripMenuItem.Text = "Save as Xfbin";
+            this.saveXfbinStripMenuItem.Click += new System.EventHandler(this.saveXfbinToolStripMenuItem_Click);
+            // 
             // MeshList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
@@ -1153,6 +1171,7 @@
             this.bfresToolStripMenu.ResumeLayout(false);
             this.kclContextMenuStrip1.ResumeLayout(false);
             this.xmbContextMenu.ResumeLayout(false);
+            this.XfbinContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1281,5 +1300,7 @@
         private System.Windows.Forms.ToolStripMenuItem renameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyToNewNudToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
+        private System.Windows.Forms.ContextMenuStrip XfbinContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem saveXfbinStripMenuItem;
     }
 }

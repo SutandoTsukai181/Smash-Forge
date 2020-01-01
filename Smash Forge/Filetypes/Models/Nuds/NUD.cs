@@ -31,8 +31,11 @@ namespace SmashForge
         //Pokkén uses little endian NUD (NDWD)
         public override Endianness Endian { get; set; }
         public ushort version = 0x0200;
+        public uint fileSize;
         public int filesIndex;
+        public int sizeOffset;
         public int startOffset;
+        public List<int> groups;
 
         //If the ModelContainer of the NUD has no bones, we will write the type as 0 regardless of this value
         //If it does have bones, this value will be written as normal. 2 is common but it can also validly be 0 and other values
@@ -872,7 +875,7 @@ namespace SmashForge
                 Endian = Endianness.Little;
 
             fileData.endian = Endian;
-            fileData.ReadUInt(); //Filesize
+            fileSize = fileData.ReadUInt(); //Filesize
 
             //Always read version in BE
             fileData.endian = Endianness.Big;
@@ -1146,10 +1149,11 @@ namespace SmashForge
                 }
                 else if (vertexType == (int)Polygon.VertexTypes.NormalsFloat)
                 {
+                    d.Skip(4); // almost always 1 (float)
                     v.nrm.X = d.ReadFloat();
                     v.nrm.Z = -d.ReadFloat();
                     v.nrm.Y = d.ReadFloat();
-                    d.Skip(4); // n1?
+                    //d.Skip(4); // n1?
                     d.Skip(4); // r1?
                 }
                 else if (vertexType == 2)
@@ -1426,6 +1430,7 @@ namespace SmashForge
             d.WriteOutput(str);
 
             d.WriteIntAt(d.Size(), 0x4);
+            fileSize = (uint)d.Size();
 
             return d.GetBytes();
         }
@@ -1497,11 +1502,12 @@ namespace SmashForge
                 }
                 else if (vertexType == (int)Polygon.VertexTypes.NormalsFloat)
                 {
+                    d.WriteFloat(1);
                     d.WriteFloat(v.nrm.X);
                     d.WriteFloat(-v.nrm.Z);
                     d.WriteFloat(v.nrm.Y);
-                    d.WriteFloat(1);
-                    d.WriteFloat(1);
+                    d.WriteFloat(0);
+                    
                 }
                 else if (vertexType == 2)
                 {
@@ -1547,7 +1553,7 @@ namespace SmashForge
                     d.WriteHalfFloat(v.nrm.X);
                     d.WriteHalfFloat(-v.nrm.Z);
                     d.WriteHalfFloat(v.nrm.Y);
-                    d.WriteHalfFloat(1);
+                    d.WriteHalfFloat(0);
                     d.WriteHalfFloat(v.bitan.X);
                     d.WriteHalfFloat(-v.bitan.Z);
                     d.WriteHalfFloat(v.bitan.Y);

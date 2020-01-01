@@ -144,78 +144,88 @@ namespace SmashForge
 
             fileData.Seek(firstFileStart);
 
-            int count = 0;
             while (fileData.Pos() < fileData.Size() - 4)
             {
-                count += ReadFile();
+                ReadFile();
             }
 
             fileData.Seek(0);
 
         }
 
-        public int ReadFile()
+        public void ReadFile()
         {
             int filesSkipped = 0;
-            
+            int lengthSkipped = 0;
+            bool skipped = false;
+
+            int headPos = fileData.Pos();
             int headSize = fileData.ReadInt();
 
             while (headSize == 8 || headSize == 0x2A || headSize == 0)
             {
+                skipped = true;
                 if (headSize == 0x2A)
                 {
                     fileData.Skip(0x32);
+                    lengthSkipped += 0x36;
                     filesSkipped++;
                 }
                 else if (headSize == 8)
                 {
                     fileData.Skip(headSize);
                     fileData.Skip(0x14);
+                    lengthSkipped += 0x20;
                     filesSkipped++;
                 }
-
                 if (fileData.Pos() > fileData.Size() - 4)
                 {
                     goto Return;
                 }
                 headSize = fileData.ReadInt();
             }
-            int headPos = fileData.Pos() - 4;
+            if (skipped) goto Return;
+
+            headPos = fileData.Pos() - 4; // unnecessary
             int index = fileData.ReadInt();
             int padFlag = fileData.ReadInt();
             int temp = fileData.Pos();
             int fileSize = fileData.ReadInt();
+            int sizePos = 0;
 
             //prevent reading miscalculations
             int i = 1;
-            while (fileSize != headSize - (i * 4) && fileData.Pos() - temp < headSize && i < 15)
+            if (headSize >= 0x200)
             {
-                for (int x = 1; x < 10; x++) //check if group bytes are counted in headSize
+                while (fileSize != headSize - (i * 4) && fileData.Pos() - temp < headSize && i < 10)
                 {
-                    if (fileSize == headSize - ((i * 4) + 0x18 + 2 + (x * 4)))
+                    for (int x = 1; x < 10; x++) //check if group bytes are counted in headSize
                     {
-                        fileData.Skip(0x18);
-                        goto Read;
+                        if (fileSize == headSize - ((i * 4) + 0x18 + 2 + (x * 4)))
+                        {
+                            fileData.Skip(0x18);
+                            goto Read;
+                        }
+                        if (fileSize == headSize - ((i * 4) + 2 + (x * 4)))
+                        {
+                            goto Read;
+                        }
                     }
-                    if (fileSize == headSize - ((i * 4) + 2 + (x * 4)))
-                    {
-                        goto Read;
-                    }
+                    sizePos = fileData.Pos();
+                    fileSize = fileData.ReadInt();
+                    i++;
                 }
-                fileSize = fileData.ReadInt();
-                i++;
             }
             if (fileSize != headSize - (i * 4))
             {
                 fileSize = headSize;
                 fileData.Seek(temp);
             }
-            
+
         Read:
 
             int start = fileData.Pos();
             FileData file = new FileData(fileData.Read(fileSize)); // array containing the file
-            filesSkipped++;
 
             uint header = file.ReadUInt();
             file.Seek(0);
@@ -224,17 +234,18 @@ namespace SmashForge
                 case (uint)Header.NDP3:
                     Nud nud = new Nud(file);
                     nud.filesIndex = files.Count;
+                    nud.sizeOffset = sizePos;
                     nud.startOffset = start;
                     offsets.Add(files.Count, headPos);
                     files.Add(files.Count, nud);
                     
-
                     int groups = fileData.ReadShort();
                     List<int> bytes = new List<int>();
                     for (int x = 0; x < groups; x++)
                     {
                         bytes.Add(fileData.ReadInt());
                     }
+                    nud.groups = bytes;
                     break;
 
                 case (uint)Header.NTP3:
@@ -248,6 +259,7 @@ namespace SmashForge
                         NUT nut = new NUT(file);
                         nut.filesIndex = files.Count;
                         nut.startOffset = start;
+                        nut.headSize = start - 4 - (headPos + 4);
                         offsets.Add(files.Count, headPos);
                         files.Add(files.Count, nut);
                     }
@@ -266,6 +278,9 @@ namespace SmashForge
                     break;
 
                 default:
+
+                    files.Add(files.Count, new Tuple<int, int>(headPos, headSize + 0xC));
+
                     /*if ((fileSize - 4) / (header / 0x1000000) == (uint)Header.prm_loadBin)
                     {
                         //Unimplemented
@@ -276,30 +291,98 @@ namespace SmashForge
                     }*/
                     break;
             }
+            return;
 
         Return:
-            return filesSkipped;
+            fileData.Seek(fileData.Pos() - 4);
+            files.Add(files.Count, new Tuple<int, int>(headPos, lengthSkipped));
+            return;
         }
 
         public override byte[] Rebuild()
         {
-            int sizeOffset = 0;
-            FileOutput d = new FileOutput(fileData.Read(fileData.Size()));
+            FileOutput d = new FileOutput();
             d.endian = Endianness.Big;
+            fileData.Seek(0);
+            d.WriteBytes(fileData.Read(firstFileStart));
+            foreach (var f in files)
+            {
+                if (f.Value is Tuple<int, int>)
+                {
+                    Tuple<int, int> t = f.Value as Tuple<int, int>;
+                    fileData.Seek(t.Item1);
+                    if (f.Key == files.Count - 1)
+                    {
+                        d.WriteBytes(fileData.Read(t.Item2 - 0xC));
+                    }
+                    else d.WriteBytes(fileData.Read(t.Item2));
+                }
+                else if (f.Value is Nud)
+                {
+                    WriteNud(d, (Nud)f.Value);
+                }
+                else if (f.Value is NUT)
+                {
+                    WriteNut(d, (NUT)f.Value);
+                }
+            }
 
             return d.GetBytes();
         }
 
-        private void WriteNud(FileOutput d, Nud nud, int sizeOffset)
+        private void WriteNud(FileOutput d, Nud nud)
         {
             byte[] file = nud.Rebuild();
+
+            if (nud.sizeOffset != 0)
+            {
+                fileData.Seek(nud.sizeOffset);
+            }
+            else fileData.Seek(nud.startOffset - 4);
+
+            int size = fileData.ReadInt();
+
+            fileData.Seek(nud.startOffset);
+            fileData.Skip(size);
+            int groups = fileData.ReadShort();
+
+            // Get difference in size
+            int diff = file.Length - size;
+            diff += (nud.groups.Count - groups) * 4;
+
             fileData.Seek(offsets[nud.filesIndex]);
+            int oldHead = fileData.ReadInt();
+            d.WriteInt(oldHead + diff);
+            d.WriteBytes(fileData.GetSection(fileData.Pos(), nud.sizeOffset - fileData.Pos()));
+            d.WriteUInt(nud.fileSize);
+            if (nud.sizeOffset != 0)
+            {
+                d.WriteBytes(fileData.GetSection(nud.sizeOffset + 4, nud.startOffset - (nud.sizeOffset + 4)));
+            }
+            d.WriteBytes(file);
+
+            d.WriteShort(nud.groups.Count);
+            foreach (int x in nud.groups)
+            {
+                d.WriteInt(x);
+            }
         }
 
-        private void WriteNut(FileOutput d, NUT nut, int sizeOffset)
+        private void WriteNut(FileOutput d, NUT nut)
         {
             byte[] file = nut.Rebuild();
+
+            // Get difference in size
+            fileData.Seek(nut.startOffset - 4);
+            int size = fileData.ReadInt();
+            int diff = file.Length - size;
+
             fileData.Seek(offsets[nut.filesIndex]);
+            int oldHead = fileData.ReadInt();
+            d.WriteInt(oldHead + diff);
+            d.WriteBytes(fileData.GetSection(fileData.Pos(), nut.headSize));
+            d.WriteUInt(nut.fileSize);
+            d.WriteBytes(file);
         }
     }
 }

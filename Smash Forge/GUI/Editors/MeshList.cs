@@ -438,6 +438,10 @@ namespace SmashForge
                 {
                     ModelContainerContextMenu.Show(this, e.X, e.Y);
                 }
+                else if (filesTreeView.SelectedNode is XfbinContainer)
+                {
+                    XfbinContextMenu.Show(this, e.X, e.Y);
+                }
             }
         }
 
@@ -2010,5 +2014,22 @@ namespace SmashForge
         }
 
         #endregion
+
+        private void saveXfbinToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string filename;
+            SaveFileDialog save = new SaveFileDialog();
+            save.Filter = "CC2 Xfbin Archive|*.xfbin|All files(*.*)|*.*";
+            DialogResult result = save.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                filename = save.FileName;
+                if (filename.EndsWith(".xfbin"))
+                {
+                    ((XfbinContainer)filesTreeView.SelectedNode).XFBIN.Save(filename);
+                }
+            }
+        }
     }
 }

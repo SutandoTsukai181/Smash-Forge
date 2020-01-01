@@ -223,7 +223,9 @@ namespace SmashForge
         public Dictionary<int, Texture> glTexByHashId = new Dictionary<int, Texture>();
 
         public ushort Version = 0x0200;
+        public uint fileSize;
         public int filesIndex;
+        public int headSize;
         public int startOffset;
 
         public override Endianness Endian { get; set; }
@@ -536,6 +538,7 @@ namespace SmashForge
                 tex.pixelInternalFormat = PixelInternalFormat.Rgba32ui;
 
                 int totalSize = d.ReadInt();
+                fileSize = (uint)totalSize + 0x10; // needs to be fixed for NUTs with 2 or more textures
                 d.Skip(4);
                 int dataSize = d.ReadInt();
                 int headerSize = d.ReadUShort();
@@ -822,8 +825,8 @@ namespace SmashForge
             {
                 if (!glTexByHashId.ContainsKey(tex.HashId))
                 {
-                    if (Text.Contains("iris"))
-                        tex.HashId = 1;
+                    //if (Text.Contains("iris"))
+                    //    tex.HashId = 1;
                     // Check if the texture is a cube map.
                     if (tex.surfaces.Count == 6)
                         glTexByHashId.Add(tex.HashId, CreateTextureCubeMap(tex));
