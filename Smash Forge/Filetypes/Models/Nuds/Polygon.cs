@@ -369,14 +369,25 @@ namespace SmashForge
                 return polygon;
             }
 
-            public void DeleteBones() // polygons might disappear depending on lighting conditions (jojo)
+            public void DeleteBones(int[] bones) // polygons might disappear depending on lighting conditions (jojo)
             {
                 foreach (Vertex v in vertices)
                 {
-                    v.boneIds[0] = 0;
-                    v.boneIds[1] = 0;
-                    v.boneIds[2] = 0;
-                    v.boneIds[3] = 0;
+                    foreach (int x in bones)
+                    {
+                        v.boneIds[x - 1] = 0;
+                    }
+                }
+            }
+
+            public void DeleteWeights(int[] weights) // polygons might disappear depending on lighting conditions (jojo)
+            {
+                foreach (Vertex v in vertices)
+                {
+                    foreach (int x in weights)
+                    {
+                        v.boneWeights[x - 1] = 0;
+                    }
                 }
             }
         }

@@ -2146,13 +2146,43 @@ namespace SmashForge
             filesTreeView.SelectedNode = node;
         }
 
-        private void deleteBonesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void allBonesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult dialogResult = MessageBox.Show("This will zero-out all the bones for this polygon. Are you sure?", "Delete Bones", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 Nud.Polygon p = (Nud.Polygon)filesTreeView.SelectedNode;
-                p.DeleteBones();
+                p.DeleteBones(new int[] { 1, 2, 3, 4 });
+            }
+        }
+
+        private void allWeightsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("This will zero-out all the bone weights for this polygon. Are you sure?", "Delete Bone Weights", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                Nud.Polygon p = (Nud.Polygon)filesTreeView.SelectedNode;
+                p.DeleteWeights(new int[] { 1, 2, 3, 4 });
+            }
+        }
+
+        private void fourthBoneOnlyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("This will zero-out only the 4th bone for this polygon. Are you sure?", "Delete 4th Bone", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                Nud.Polygon p = (Nud.Polygon)filesTreeView.SelectedNode;
+                p.DeleteBones(new int[] { 4 });
+            }
+        }
+
+        private void fourthWeightOnlyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("This will zero-out only the 4th bone weight for this polygon. Are you sure?", "Delete 4th Bone Weight", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                Nud.Polygon p = (Nud.Polygon)filesTreeView.SelectedNode;
+                p.DeleteWeights(new int[] { 1, 2, 3, 4 });
             }
         }
     }
