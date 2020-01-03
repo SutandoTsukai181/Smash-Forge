@@ -525,7 +525,8 @@ namespace SmashForge
             //System.Diagnostics.Debug.WriteLine("");
         }
 
-        private bool bugged = false;
+        public bool texBugged = false;
+        public bool meshBugged = false;
 
         private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, Material previousMaterial, bool drawId)
         {
@@ -541,7 +542,7 @@ namespace SmashForge
 
             try // nsuns textures bug
             {
-                if (!bugged)
+                if (!texBugged)
                 {
                     if (p.Parent.Parent.Text.Contains("eye"))
                         material.texType = 1;
@@ -549,7 +550,7 @@ namespace SmashForge
                         NudUniforms.SetTextureUniforms(shader, material, dummyTextures);
                 }
             }
-            catch { bugged = true; }
+            catch { texBugged = true; }
             
             // Update render mesh settings.
             // TODO: Avoid redundant state changes.

@@ -177,7 +177,16 @@ namespace SmashForge
 
                 foreach (Nud n in NUDs)
                 {
-                    n.Render(VBN, camera, drawShadow, Runtime.drawNudColorIdPass);
+                    try
+                    {
+                        if (n.meshBugged) continue;
+                        n.Render(VBN, camera, drawShadow, Runtime.drawNudColorIdPass);
+                    }
+                    catch
+                    { 
+                        n.meshBugged = true;
+                        MessageBox.Show("The following nud could not be rendered: \"" + n.Text + "\".", "Warning", MessageBoxButtons.OK);
+                    }
                 }
             }
         }
