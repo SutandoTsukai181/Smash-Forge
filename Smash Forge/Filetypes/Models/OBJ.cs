@@ -69,6 +69,11 @@ namespace SmashForge
                         vt.Add(new Vector2(float.Parse(args[1]), float.Parse(args[2])));
                         break;
                     case "f":
+                        if (args[1].Contains("//"))
+                        {
+                            for (int l = 1; l < 4; l++)
+                                args[l] = args[l].Remove(args[l].IndexOf('/'), 1);
+                        }
                         g.v.Add(int.Parse(args[1].Split('/')[0]) - 1);
                         g.v.Add(int.Parse(args[2].Split('/')[0]) - 1);
                         g.v.Add(int.Parse(args[3].Split('/')[0]) - 1);
