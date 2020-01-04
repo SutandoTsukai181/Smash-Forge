@@ -96,19 +96,22 @@ namespace SmashForge
 
             switch (paddingFlag)
             {
+                // Start of the first file's header
+                // 0x1C is where you start counting
+                // 0x18 and 0xC is the padding after the 2nd padding ends
                 case 79:
-                    firstFileStart = fileData.ReadInt() + 0x34; // Start of the first file's header
+                    firstFileStart = fileData.ReadInt() + 0x1C + 0x18;
                     break;
                 case 63:
-                    firstFileStart = fileData.ReadInt() + 0x28;
+                    firstFileStart = fileData.ReadInt() + 0x1C + 0xC;
                     break;
                 default:
-                    firstFileStart = fileData.ReadInt() + 0x34;
+                    firstFileStart = fileData.ReadInt() + 0x1C + 0x18;
                     break;
             }
 
             fileData.ReadInt(); // Known: 3, 5
-            fileData.ReadShort(); // Same as previous unknown
+            fileData.ReadShort(); // Same as padding flag
             fileData.ReadShort(); // Unknown for now
             int nuccPropsCount = fileData.ReadInt();
 
@@ -116,12 +119,12 @@ namespace SmashForge
             directoryStart = 0x44 + nuccPropsSize;
             directoryCount = fileData.ReadInt() - 1; // Number of strings in the section
             fileNameStart = directoryStart + fileData.ReadInt();
-            fileNameCount = fileData.ReadInt() - 1; // Page0 and index are included in the count
+            fileNameCount = fileData.ReadInt() - 1; // Page0 and index are included in the count, even after -1
 
             firstPaddingStart = fileNameStart + fileData.ReadInt();
-            fileData.ReadInt(); // 3 unknown values, probably related to how padding works
-            fileData.ReadInt();
-            fileData.ReadInt();
+            fileData.ReadInt(); // somehow similar to fileNameCount
+            int firstPaddingSize = fileData.ReadInt(); // First padding length, starts after some 00s after file names
+            int secondPaddingSize = fileData.ReadInt() * 4; // Second padding count; each section is 4 bytes
 
             fileData.Skip(4);
 
@@ -149,6 +152,8 @@ namespace SmashForge
                     continue;
                 fileNames.Add(s);
             }
+            fileData.Skip(1);
+
             try
             {
                 // Read group and bone names
@@ -192,7 +197,24 @@ namespace SmashForge
                 MessageBox.Show("Group bytes have to be changed manually.", "Warning", MessageBoxButtons.OK);
             }
 
-            //padding should be read here
+            switch(fileData.Pos() % 4)
+            {
+                case 0:
+                    fileData.Skip(0xC);
+                    break;
+                case 1:
+                    fileData.Skip(3);
+                    goto case 0;
+                case 2:
+                    fileData.Skip(2);
+                    goto case 0;
+                case 3:
+                    fileData.Skip(1);
+                    goto case 0;
+            }
+
+            fileData.Read(firstPaddingSize);
+            fileData.Read(secondPaddingSize);
 
             fileData.Seek(firstFileStart);
 
