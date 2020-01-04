@@ -82,10 +82,16 @@ namespace SmashForge
             if (magic.Equals("NUCC"))
                 Endian = Endianness.Big;
             else
-                throw new Exception($"File is not a valid xfbin.");
+            {
+                if (magic.Substring(0, 3).Equals("CPK"))
+                    MessageBox.Show($"Correct CPK extraction using CRI Packed File Maker is required.", "Xfbin is not decrypted");
+                else
+                    MessageBox.Show($"File is not a valid xfbin.");
+                return;
+            }
 
             fileData.endian = Endian;
-            paddingFlag = fileData.ReadInt(); // Known for now: 79, 63
+            paddingFlag = fileData.ReadInt(); // Known for now: 79, 63, 7A
             fileData.Skip(8);
 
             switch (paddingFlag)
