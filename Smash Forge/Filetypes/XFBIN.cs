@@ -91,7 +91,7 @@ namespace SmashForge
             }
 
             fileData.endian = Endian;
-            paddingFlag = fileData.ReadInt(); // Known for now: 79, 63, 7A
+            paddingFlag = fileData.ReadInt(); // Known for now: 79, 63, 7A; should be short not int
             fileData.Skip(8);
 
             switch (paddingFlag)
@@ -111,7 +111,7 @@ namespace SmashForge
             }
 
             fileData.ReadInt(); // Known: 3, 5
-            fileData.ReadShort(); // Same as padding flag
+            fileData.ReadShort(); // Same as padding flag; should be short not int
             fileData.ReadShort(); // Unknown for now
             int nuccPropsCount = fileData.ReadInt();
 
@@ -126,7 +126,8 @@ namespace SmashForge
             int firstPaddingSize = fileData.ReadInt(); // First padding length, starts after some 00s after file names
             int secondPaddingSize = fileData.ReadInt() * 4; // Second padding count; each section is 4 bytes
 
-            fileData.Skip(4);
+            // mostly 0, but is important for mot files
+            firstFileStart += fileData.ReadInt() * 8;
 
             // Nucc properties
             for (int x = 0; x < nuccPropsCount; x++)
