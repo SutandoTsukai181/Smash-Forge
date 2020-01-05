@@ -2182,7 +2182,7 @@ namespace SmashForge
             if (dialogResult == DialogResult.Yes)
             {
                 Nud.Polygon p = (Nud.Polygon)filesTreeView.SelectedNode;
-                p.DeleteWeights(new int[] { 1, 2, 3, 4 });
+                p.DeleteWeights(new int[] { 4 });
             }
         }
     }
