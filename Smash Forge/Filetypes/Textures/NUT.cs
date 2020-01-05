@@ -381,6 +381,8 @@ namespace SmashForge
                 headerLength += headerSize;
             }
 
+            fileSize = 0x10;
+
             // write headers+data
             foreach (NutTexture texture in Nodes)
             {
@@ -408,6 +410,7 @@ namespace SmashForge
                     while (headerSize % 0x10 != 0)
                         headerSize += 1;
                 }
+                fileSize += dataSize + headerSize;
 
                 o.WriteUInt(dataSize + headerSize);
                 o.WriteUInt(0);
@@ -528,6 +531,7 @@ namespace SmashForge
 
             d.Skip(0x8);
             int headerPtr = 0x10;
+            fileSize = 0x10;
 
             for (ushort i = 0; i < count; ++i)
             {
@@ -538,7 +542,7 @@ namespace SmashForge
                 tex.pixelInternalFormat = PixelInternalFormat.Rgba32ui;
 
                 int totalSize = d.ReadInt();
-                fileSize = (uint)totalSize + 0x10; // needs to be fixed for NUTs with 2 or more textures
+                fileSize += (uint)totalSize; // needs to be fixed for NUTs with 2 or more textures
                 d.Skip(4);
                 int dataSize = d.ReadInt();
                 int headerSize = d.ReadUShort();

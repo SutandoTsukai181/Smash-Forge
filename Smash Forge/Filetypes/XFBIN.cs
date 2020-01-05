@@ -333,16 +333,21 @@ namespace SmashForge
                     fileData.ReadShort(); //length
                     fileData.Seek(start + fileSize);
 
+                    NUT nut;
                     try // nsuns texture bug
                     {
-                        NUT nut = new NUT(file);
-                        nut.filesIndex = files.Count;
-                        nut.startOffset = start;
-                        nut.headSize = start - 4 - (headPos + 4);
-                        offsets.Add(files.Count, headPos);
-                        files.Add(files.Count, nut);
+                        nut = new NUT(file);
                     }
-                    catch { }
+                    catch
+                    {
+                        goto default;
+                    }
+
+                    nut.filesIndex = files.Count;
+                    nut.startOffset = start;
+                    nut.headSize = start - 4 - (headPos + 4);
+                    offsets.Add(files.Count, headPos);
+                    files.Add(files.Count, nut);
                     break;
 
                 case (uint)Header.prmBin:
